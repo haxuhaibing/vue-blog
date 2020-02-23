@@ -4,7 +4,7 @@ module.exports = {
     port: 8080,
     proxy: {
       '/api': {
-        target: 'http://www.xuhaibing.io/api',
+        target: 'http://api.xuhaibing.com/v1',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

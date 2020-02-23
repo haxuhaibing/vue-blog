@@ -13,7 +13,7 @@
             <h4>评论列表</h4>
           </div>
           <div class="post-comment-form">
-            <div class="form-group" v-if="username">
+            <div class="form-group" v-if="!username">
               <input
                 type="text"
                 placeholder="昵称"
@@ -26,7 +26,7 @@
             </div>
             <div class="form-group">
               <button class="btn btn-primary" type="submit" @click="onComment">
-                确定
+                发布评论
               </button>
             </div>
           </div>
@@ -36,7 +36,11 @@
             <h4>评论列表</h4>
           </div>
           <div class="article-comments-list">
-            <div class="article-comments-item" v-for="row in commentsList">
+            <div
+              class="article-comments-item"
+              v-for="row in commentsList"
+              :key="row.id"
+            >
               <div class="item-avatar">
                 <img :src="row.avatar" alt="" />
               </div>
@@ -52,62 +56,41 @@
         </div>
       </div>
       <div class="col-lg-3">
-        <div class="hot">
-          <div class="headline-title">
-            <h6>近期热门 - 点击最多</h6>
-          </div>
-        </div>
+        <HotArticle></HotArticle>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import HotArticle from "@/components/HotArticle.vue";
 export default {
   name: "detail",
-  props: {
-    content: {
-      type: String,
-      default: "请输入您的内容"
-    }
-  },
   data() {
     return {
       detail: {},
       commentsList: {},
       nickname: "",
       username: this.$store.state.userInfo.username || "",
-      contents: ""
+      contents: "",
+      id: this.$route.params.id
     };
   },
-  mounted() {
-    this.initEditor();
-    this.post("detail/detail.php", {
-      id: 1
-    }).then(res => {
-      console.log(res);
-      this.detail = res.data;
-    });
-    this.getComments();
+  created() {
+    this.init();
   },
+  mounted() {},
   methods: {
-    initEditor() {
-      var config = {
-        extraPlugins: "codesnippet",
-        codeSnippet_theme: "github",
-        height: 200
-      };
-      CKEDITOR.replace("editor", config);
-      //  CKEditor 初始化完成加载数据
-      CKEDITOR.on("instanceReady", e => {
-        this.setContent();
-      });
-
-      //  CKEditor 数据改变-监听
-      CKEDITOR.instances.editor.on("change", e => {
-
-
-
+    init() {
+      this.getDetail();
+      this.getComments();
+    },
+    getDetail() {
+      this.post("detail/detail.php", {
+        id: this.id
+      }).then(res => {
+        //  console.log("获取详情", res);
+        this.detail = res.data;
       });
     },
     onComment() {
@@ -115,36 +98,49 @@ export default {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
-        pid: 1
+        pid: this.id
       }).then(res => {
-        console.log("评理", res);
+        console.log("提交评论", res);
+        if (res.code == 200) {
+          this.$message({
+            showClose: true,
+            message: "评论成功",
+            type: "success"
+          });
+          this.contents = "";
+          this.getComments();
+        }
       });
     },
     getComments() {
       this.post("detail/getComments.php", {
-        pid: 1
+        pid: this.id
       }).then(res => {
-        console.log("获取评理", res);
+        //console.log("获取评论", res);
         this.commentsList = res.data;
       });
- 
-    },
-    setContent() {
-      CKEDITOR.instances.editor.setData(this.content);
-    },
-    getContent() {
-      // 参照vue子组件传值给
-      this.$emit("catchData", CKEDITOR.instances.editor.getData());
+    }
+  },
+  components: {
+    HotArticle
+  },
+  watch: {
+    $route(to, from) {
+      //注意监听的是query还是params
+      if (to.params.id != from.params.id) {
+        this.id = this.$route.params.id;
+        this.init();
+      }
     }
   }
 };
 </script>
 
-<style lang="css" scoped>
-.detail-container{
+<style lang="scss" scoped>
+.detail-container {
   margin-top: 15px;
 }
-.article-comments-list{
+.article-comments-list {
   margin-top: 15px;
 }
 .article-comments-item {
@@ -191,9 +187,18 @@ export default {
   font-size: 0.8rem;
   margin-top: 0.5rem;
 }
-.article-comments-item .comment img{
+.article-comments-item .comment img {
   max-width: 200px;
   display: block;
-  height: auto!important;
+  height: auto !important;
+}
+.post-comment-form {
+  textarea {
+    width: 100%;
+    height: 160px;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    padding: 8px;
+  }
 }
 </style>

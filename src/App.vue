@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header></Header>
+    <Header v-show="!$route.meta.isHideHeader"></Header>
     <router-view />
   </div>
 </template>
@@ -21,6 +21,13 @@ li,
 ol,
 ul {
   list-style: none;
+  padding: 0;
+}
+a {
+  &:hover {
+    color: #007bff !important;
+    text-decoration: none !important;
+  }
 }
 #app {
 }

@@ -3,27 +3,42 @@
     <div class="container">
       <div class="row">
         <div class="col-3">
-          <img class="logo" src="@/assets/logo.png" alt="" />
+          <router-link :to="{ name: 'home' }">
+            <img class="logo" src="@/assets/images/logo.png" alt="" />
+          </router-link>
         </div>
         <div class="col-9 ">
           <div class="row justify-content-end">
-            <div class="col-md-auto">
+            <div class="col-auto">
               <ul class="nav">
                 <li>首页</li>
-                <li>分类</li>
-                <li>关于我</li>
                 <li>
+                  <router-link to="/publish">
+                    分类
+                  </router-link>
+                </li>
+                <li>关于我</li>
+                <li v-if="!userInfo">
                   <router-link to="/login">登录</router-link>
                 </li>
               </ul>
             </div>
-            <div class="col-md-auto" v-if="true">
+            <div class="col-auto" v-if="userInfo">
               <div class="dropdown">
-                <img class="user-avatar" :src="userInfo.avatar" alt="" />
-                <div class="dropdown-menu">
+                <img
+                  class="user-avatar"
+                  :src="userInfo.avatar"
+                  alt=""
+                  @click="isUserDropdown = !isUserDropdown"
+                />
+                <div
+                  class="dropdown-menu"
+                  v-show="isUserDropdown"
+                  @click="isUserDropdown = !isUserDropdown"
+                >
                   <div class="dropdown-item"></div>
                   <div class="dropdown-item">资料与账户</div>
-                  <div class="dropdown-item">退出</div>
+                  <div class="dropdown-item" @click="LOGIN_OUT">退出</div>
                 </div>
               </div>
             </div>
@@ -37,11 +52,15 @@
 <script>
 import { mapState, mapMutations, mapActions } from "vuex";
 export default {
-  data(){
-    return{}
+  data() {
+    return {
+      isUserDropdown: false
+    };
   },
-  mounted(){
-
+  mounted() {},
+  methods: {
+    ...mapMutations(["LOGIN_OUT"]),
+    ...mapActions([])
   },
   computed: {
     userInfo() {
@@ -75,5 +94,10 @@ header {
   width: 40px;
   height: 40px;
   border-radius: 50%;
+  background: #f8f8f8;
+  display: block;
+}
+.dropdown-menu {
+  display: block;
 }
 </style>

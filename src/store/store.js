@@ -6,7 +6,7 @@ import getters from './getters'
 Vue.use(Vuex)
 
 const state = {
-  userInfo: JSON.parse(sessionStorage.getItem('userInfo'))
+  userInfo: JSON.parse(sessionStorage.getItem('userInfo'))  || ''
 }
 
 export default new Vuex.Store({

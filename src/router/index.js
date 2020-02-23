@@ -3,30 +3,38 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 
 const routes = [{
-    path: '/',
+    path: '/home',
     name: 'home',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "about" */ '../views/home/home.vue')
+    component: () => import( /* webpackChunkName: "about" */ '../views/home/home.vue'),
+    meta: {
+      title: '首页'
+    }
+  }, {
+    path: '/',
+    redirect: {
+      name: 'home'
+    }
   },
   {
     path: '/login',
     name: 'login',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import( /* webpackChunkName: "about" */ '../views/login/Login.vue')
+    component: () => import( /* webpackChunkName: "about" */ '../views/login/Login.vue'),
+    meta: {
+      title: '登录',
+      isHideHeader: true
+    }
   },
   {
     path: '/detail/:id',
     name: 'detail',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue')
+  },
+  {
+    path: '/publish',
+    name: 'publish',
+    component: () => import( /* webpackChunkName: "about" */ '../views/publish/publish.vue')
   }
-  
+
 ]
 
 const router = new VueRouter({
@@ -34,5 +42,14 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-
+// routes.beforeEach((to, from, next) => {
+//   // ...
+// })
 export default router
+
+// router.routes.beforeEach((to, from, next) => {
+//   if (to.meta.title) {
+//     document.title = to.meta.title
+//   }
+//
+// })

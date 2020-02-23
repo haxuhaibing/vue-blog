@@ -3,10 +3,10 @@ import store from '../store/store'
 import qs from 'qs'
 
 var isDev = process.env.NODE_ENV === 'production'
-if (!isDev) {
-  axios.defaults.baseURL = '/api'
+if (isDev) {
+  axios.defaults.baseURL = 'http://api.xuhaibing.com/v1'
 } else {
-  axios.defaults.baseURL = 'http://www.xuhaibing.io/api'
+  axios.defaults.baseURL = 'http://api.xuhaibing.io/v1'
 }
 // axios 配置
 axios.defaults.timeout = 5000
@@ -14,8 +14,7 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;char
 //axiso
 axios.interceptors.request.use(
   config => {
-    let token = store.state.userInfo.token;
-    //  console.log(config)
+    let token = store.state.userInfo.token || '';
     if (config.method == 'get') {
       config.params.token = token
     }
