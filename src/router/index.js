@@ -39,6 +39,19 @@ const routes = [{
     meta: {
       title: '发布文章'
     }
+  },
+  {
+    path: '/category/:id',
+    name: 'category',
+    component: () => import( /* webpackChunkName: "about" */ '../views/category/category.vue'),
+    meta: {
+      title: '文章分类'
+    }
+  }, {
+    path: '/category',
+    redirect: {
+      path: '/category/1'
+    }
   }
 
 ]
