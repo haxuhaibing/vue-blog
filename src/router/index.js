@@ -27,12 +27,18 @@ const routes = [{
   {
     path: '/detail/:id',
     name: 'detail',
-    component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue')
+    component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue'),
+    meta: {
+      title: '加载中...'
+    }
   },
   {
     path: '/publish',
     name: 'publish',
-    component: () => import( /* webpackChunkName: "about" */ '../views/publish/publish.vue')
+    component: () => import( /* webpackChunkName: "about" */ '../views/publish/publish.vue'),
+    meta: {
+      title: '发布文章'
+    }
   }
 
 ]
@@ -45,6 +51,15 @@ const router = new VueRouter({
 // routes.beforeEach((to, from, next) => {
 //   // ...
 // })
+
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.title) {
+    document.title = to.meta.title;
+  }
+  next()
+})
+
 export default router
 
 // router.routes.beforeEach((to, from, next) => {

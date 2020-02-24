@@ -39,7 +39,7 @@ export default {
   mounted() {},
   methods: {
     submit() {
-      this.post("login/login.php", {
+      this.post("user/login/login", {
         username: this.username,
         password: this.password
       }).then(res => {

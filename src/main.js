@@ -12,11 +12,13 @@ import {
 } from '@/utils/http'
 //highlight.js码高亮配色主题
 import '@/assets/css/github.css'
+import '@/assets/css/commom.scss'
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 Vue.prototype.post = post
 Vue.prototype.fetch = fetch
-
+import CKEditor from '@ckeditor/ckeditor5-vue';
+Vue.use( CKEditor );
 import {
   Pagination,
   Dialog,
@@ -94,7 +96,8 @@ import {
   Loading,
   MessageBox,
   Message,
-  Notification
+  Notification,
+  Avatar
 } from 'element-ui';
 
 Vue.use(Pagination);
@@ -168,6 +171,7 @@ Vue.use(Divider);
 Vue.use(Image);
 Vue.use(Calendar);
 Vue.use(Backtop);
+Vue.use(Avatar);
 Vue.use(PageHeader);
 Vue.use(CascaderPanel);
 Vue.use(Loading.directive);

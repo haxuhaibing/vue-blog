@@ -33,7 +33,7 @@
 </template>
 
 <script>
-// import { mapState, mapMutations, mapActions } from "vuex";
+
 import HotArticle from "@/components/HotArticle.vue";
 export default {
   name: "home",
@@ -48,7 +48,7 @@ export default {
   mounted() {},
   methods: {
     getArticleList() {
-      this.post("/article/list.php").then(res => {
+      this.post("/article/list").then(res => {
         console.log("文章列表", res);
         if (res.code == 200) {
           this.articleList = res.data;

@@ -2,17 +2,20 @@
   <div id="app">
     <Header v-show="!$route.meta.isHideHeader"></Header>
     <router-view />
+    <Footer v-show="!$route.meta.isHideFooter"></Footer>
   </div>
 </template>
 <script>
 import Header from "@/components/Header.vue";
+import Footer from "@/components/Footer.vue";
 export default {
   data() {
     return {};
   },
   methods: {},
   components: {
-    Header
+    Header,
+    Footer
   }
 };
 </script>
@@ -31,4 +34,5 @@ a {
 }
 #app {
 }
+
 </style>

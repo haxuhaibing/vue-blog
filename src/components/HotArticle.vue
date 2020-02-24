@@ -28,7 +28,7 @@ export default {
   mounted() {},
   methods: {
     getHotArticleList() {
-      this.post("/article/hotList.php").then(res => {
+      this.post("/article/hotList").then(res => {
         console.log("热门文章", res);
         if (res.code == 200) {
           this.hotArticleList = res.data;

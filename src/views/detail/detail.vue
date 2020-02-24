@@ -6,6 +6,24 @@
           <div class="detail-title">
             <h1>{{ detail.title }}</h1>
           </div>
+          <div class="detail-propety">
+            <div
+              class="row no-gutters align-items-center"
+              style="margin:16px 0"
+            >
+              <div class="col-aotu">
+                <div class="detail-propety-tags">
+                  <el-tag size="small">{{ detail.tags }}</el-tag>
+                </div>
+              </div>
+              <div class="col-aotu">
+                <div class="detail-propety-publish">
+                  <span>发布于</span>
+                  <span>{{ detail.time }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="detail-desc" v-html="detail.contents" v-highlight></div>
         </div>
         <div class="post-comment">
@@ -22,7 +40,12 @@
               />
             </div>
             <div class="form-group">
-              <textarea v-model="contents" id="editor"></textarea>
+              <ckeditor
+                :editor="editor"
+                v-model="contents"
+                :config="editorConfig"
+              >
+              </ckeditor>
             </div>
             <div class="form-group">
               <button class="btn btn-primary" type="submit" @click="onComment">
@@ -49,7 +72,7 @@
                   <span class="user">{{ row.username }}</span>
                   <span class="time">{{ row.time }}</span>
                 </div>
-                <div class="comment">{{ row.contents }}</div>
+                <div class="comment" v-html="row.contents" v-highlight></div>
               </div>
             </div>
           </div>
@@ -63,6 +86,7 @@
 </template>
 
 <script>
+// import ClassicEditor from "@/assets/ckeditor5/build/ckeditor.js";
 import HotArticle from "@/components/HotArticle.vue";
 export default {
   name: "detail",
@@ -72,8 +96,32 @@ export default {
       commentsList: {},
       nickname: "",
       username: this.$store.state.userInfo.username || "",
+      id: this.$route.params.id,
+      editor: ClassicEditor,
       contents: "",
-      id: this.$route.params.id
+      editorConfig: {
+        toolbar: {
+          items: [
+            // "heading",
+            // "|",
+            "bold",
+            "italic",
+            "link",
+            // "bulletedList",
+            // "numberedList",
+            // "|",
+            // "imageUpload",
+            // "blockQuote",
+            // "insertTable",
+            // "code",
+            "codeBlock"
+            // "|",
+            // "undo",
+            // "redo"
+          ]
+        },
+        language: "zh-cn"
+      }
     };
   },
   created() {
@@ -86,15 +134,16 @@ export default {
       this.getComments();
     },
     getDetail() {
-      this.post("detail/detail.php", {
+      this.post("article/detail", {
         id: this.id
       }).then(res => {
-        //  console.log("获取详情", res);
+        console.log("获取详情", res);
         this.detail = res.data;
+        document.title = res.data.title;
       });
     },
     onComment() {
-      this.post("detail/comment.php", {
+      this.post("article/comment", {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
@@ -113,7 +162,7 @@ export default {
       });
     },
     getComments() {
-      this.post("detail/getComments.php", {
+      this.post("article/getComments", {
         pid: this.id
       }).then(res => {
         //console.log("获取评论", res);
@@ -199,6 +248,17 @@ export default {
     border: 1px solid #ced4da;
     border-radius: 5px;
     padding: 8px;
+  }
+}
+.detail-propety-tags {
+  margin-right: 8px;
+}
+.detail-propety-publish {
+  color: #6c757d;
+  font-size: 12px;
+
+  span {
+    margin-right: 8px;
   }
 }
 </style>

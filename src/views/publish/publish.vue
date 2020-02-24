@@ -16,12 +16,8 @@
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-input
-          type="textarea"
-          v-model="contents"
-          :rows="8"
-          placeholder="请输入内容"
-        ></el-input>
+        <ckeditor :editor="editor" v-model="contents" :config="editorConfig">
+        </ckeditor>
       </el-form-item>
 
       <el-form-item>
@@ -36,34 +32,55 @@ export default {
   name: "publish",
   data() {
     return {
-      title: "1231",
+      title: "",
       tag: "",
       tags: [],
-      contents: "",
       formLabelAlign: {
         name: "",
         region: "",
         type: ""
+      },
+      editor: ClassicEditor,
+      contents: "",
+      editorConfig: {
+        toolbar: {
+          items: [
+            "heading",
+            "|",
+            "bold",
+            "italic",
+            "link",
+            "bulletedList",
+            "numberedList",
+            "|",
+            "imageUpload",
+            "blockQuote",
+            "insertTable",
+            "code",
+            "codeBlock"
+          ]
+        },
+        language: "zh-cn"
       }
     };
   },
   mounted() {
-    this.post("cate/cateType.php").then(res => {
-      if (res.code == 0) {
+    this.post("cate/cateType").then(res => {
+      if (res.code == 200) {
         this.tags = res.data;
       }
     });
   },
   methods: {
     onSubmit() {
-      this.post("article/publishArticle.php", {
+      this.post("article/publishArticle", {
         title: this.title,
         contents: this.contents,
         cate_id: this.tag,
-        username: this.$store.state.userInfo.username
+        user_id: this.$store.state.userInfo.id
       }).then(res => {
         console.log(res);
-        if (res.code == 0) {
+        if (res.code == 200) {
         }
       });
     }

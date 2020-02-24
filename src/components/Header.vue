@@ -8,39 +8,40 @@
           </router-link>
         </div>
         <div class="col-9 ">
-          <div class="row justify-content-end">
+          <div class="row justify-content-end align-items-center">
             <div class="col-auto">
               <ul class="nav">
-                <li>首页</li>
+                <li><router-link to="/home">首页</router-link></li>
                 <li>
-                  <router-link to="/publish">
+                  <router-link to="/cate">
                     分类
                   </router-link>
                 </li>
-                <li>关于我</li>
+                <li>
+                  <router-link to="/about">关于我</router-link>
+                </li>
                 <li v-if="!userInfo">
                   <router-link to="/login">登录</router-link>
                 </li>
               </ul>
             </div>
             <div class="col-auto" v-if="userInfo">
-              <div class="dropdown">
-                <img
-                  class="user-avatar"
-                  :src="userInfo.avatar"
-                  alt=""
-                  @click="isUserDropdown = !isUserDropdown"
-                />
-                <div
-                  class="dropdown-menu"
-                  v-show="isUserDropdown"
-                  @click="isUserDropdown = !isUserDropdown"
-                >
-                  <div class="dropdown-item"></div>
-                  <div class="dropdown-item">资料与账户</div>
-                  <div class="dropdown-item" @click="LOGIN_OUT">退出</div>
-                </div>
-              </div>
+              <el-dropdown>
+                <span class="el-dropdown-link">
+                  <el-avatar :size="30" :src="userInfo.avatar"></el-avatar>
+                </span>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    ><router-link to="/publish"
+                      >发布文章</router-link
+                    ></el-dropdown-item
+                  >
+                  <el-dropdown-item>资料与账户</el-dropdown-item>
+                  <el-dropdown-item
+                    ><span @click="LOGIN_OUT">退出</span></el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </div>
         </div>
@@ -50,17 +51,14 @@
 </template>
 
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
+import { mapMutations } from "vuex";
 export default {
   data() {
-    return {
-      isUserDropdown: false
-    };
+    return {};
   },
   mounted() {},
   methods: {
-    ...mapMutations(["LOGIN_OUT"]),
-    ...mapActions([])
+    ...mapMutations(["LOGIN_OUT"])
   },
   computed: {
     userInfo() {
@@ -73,10 +71,9 @@ export default {
 <style lang="scss" scoped>
 header {
   border-bottom: 1px solid #e7e7e7;
+  padding: 8px 0;
 }
-.container {
-  padding: 10px 15px;
-}
+
 .logo {
   height: 40px;
 }
@@ -85,19 +82,13 @@ header {
     margin-left: 16px;
     line-height: 40px;
     cursor: pointer;
+    font-size: 1rem;
   }
   a {
     color: #333;
   }
 }
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #f8f8f8;
-  display: block;
-}
-.dropdown-menu {
-  display: block;
+.el-avatar > img {
+  cursor: pointer !important;
 }
 </style>
