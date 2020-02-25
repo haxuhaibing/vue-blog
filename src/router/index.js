@@ -41,7 +41,7 @@ const routes = [{
     }
   },
   {
-    path: '/category/:id',
+    path: '/category/:tag',
     name: 'category',
     component: () => import( /* webpackChunkName: "about" */ '../views/category/category.vue'),
     meta: {
@@ -50,7 +50,7 @@ const routes = [{
   }, {
     path: '/category',
     redirect: {
-      path: '/category/1'
+      path: '/category/notes'
     }
   }
 
@@ -61,23 +61,21 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-// routes.beforeEach((to, from, next) => {
-//   // ...
-// })
-
-
+/**
+ * 重写路由的push方法,解决添加相同路径报错问题
+ */
+const routerErrorPush = VueRouter.prototype.push;
+VueRouter.prototype.push = function push(location) {
+  return routerErrorPush.call(this, location).catch(error => error)
+}
+/**
+ * 动态添加页面标题
+ * @type string
+ */
 router.beforeEach((to, from, next) => {
   if (to.meta.title) {
     document.title = to.meta.title;
   }
   next()
 })
-
 export default router
-
-// router.routes.beforeEach((to, from, next) => {
-//   if (to.meta.title) {
-//     document.title = to.meta.title
-//   }
-//
-// })

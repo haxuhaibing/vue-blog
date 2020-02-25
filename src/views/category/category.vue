@@ -5,27 +5,32 @@
         <div class="col-lg-9">
           <div class="category-nav">
             <div class="category-nav-title">
-              <h5>分类：</h5>
+              分类：
             </div>
             <div class="category-nav-list">
               <ul>
                 <li
                   v-for="item in categoryList"
                   :key="item.id"
-                  @click="onCate(item.id)"
+                  @click="onCate(item.tag, item.id)"
+                  :class="[categoryId == item.id ? 'active' : '']"
                 >
                   {{ item.name }}
                 </li>
               </ul>
             </div>
           </div>
-          <div class="headline-title">
+          <div class="headline-title mt15">
             <h4>文章列表</h4>
           </div>
-          <div class="cate-list">
+          <div
+            class="cate-list"
+            v-loading="cateListLoading"
+            element-loading-text="拼命加载中"
+          >
             <div
               class="article-list-item"
-              v-for="row in articleList"
+              v-for="row in currentList"
               :key="row.id"
             >
               <h2 class="title">
@@ -41,67 +46,121 @@
                 <div class="date">{{ row.time }}</div>
               </div>
             </div>
+            <div v-if="isData">暂无数据！</div>
           </div>
+
           <el-pagination
             background
             layout="prev, pager, next"
+            :page-size="setps"
             :total="total"
             :current-page.sync="currentPage"
+            :hide-on-single-page="isPagination"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
           >
           </el-pagination>
         </div>
-        <div class="col-lg-3"></div>
+        <div class="col-lg-3">
+          <HotArticle></HotArticle>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import HotArticle from "@/components/HotArticle";
 export default {
   name: "category",
   data() {
     return {
       currentPage: 1,
+      setps: 4,
       categoryList: [],
       articleList: [],
-      total: 30,
-      categoryId: this.$route.params.id
+      currentList: [],
+      total: 0,
+      cateListLoading: true,
+      categoryId: "",
+      isPagination: true,
+      isData: false
     };
   },
   created() {
-    this.getCategory();
-    this.getArticleList();
+    this.init();
   },
   mounted() {},
   methods: {
+    init() {
+      this.getCategory();
+    },
+    //获取文章列表
     getArticleList() {
+      this.cateListLoading = true;
       this.post("/article/list", {
         cate_id: this.categoryId
       }).then(res => {
         console.log("文章列表", res);
         if (res.code == 200) {
-          this.articleList = res.data;
+          if (res.data) {
+            this.articleList = res.data;
+            this.total = this.articleList.length;
+          } else {
+            this.isData = true;
+          }
+          this.cateListLoading = false;
+          this.getPaginationList();
         }
       });
     },
+    //获取分类
     getCategory() {
       this.post("cate/cateType").then(res => {
         if (res.code == 200) {
           this.categoryList = res.data;
+          //解析当前url分类
+          for (let item of res.data) {
+            if (item.tag == this.$route.params.tag) {
+              this.categoryId = item.id;
+              break;
+            }
+          }
+          //获取的列表依赖分类
+          this.getArticleList();
         }
       });
     },
-    onCate(id) {
-      this.$router.push({ path: `/category/${id}` });
+    getPaginationList() {
+      let currentSize = this.currentPage - 1;
+      let setps = this.setps;
+      let result = this.articleList.slice(
+        currentSize * setps,
+        setps * (currentSize + 1)
+      );
+      this.currentList = result;
+    },
+    onCate(tag, id) {
+      this.isData = false;
+      this.categoryId = id;
+        this.currentList=[];
+      this.cateListLoading = true;
+      this.$router.push({ path: `/category/${tag}` });
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
+      //  console.log(`每页 ${val} 条`);
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
+      this.getPaginationList();
     }
+  },
+  watch: {
+    $route() {
+      this.init();
+    }
+  },
+  components: {
+    HotArticle
   }
 };
 </script>
@@ -143,9 +202,11 @@ export default {
   border-bottom: 1px solid #f1f1f1;
 }
 .category-nav-title {
+  font-size: 1rem;
 }
 .category-nav-list {
   flex: 1;
+
   ul {
     display: -webkit-flex;
     display: -ms-flex;
@@ -153,9 +214,20 @@ export default {
   }
   li {
     margin-left: 16px;
+    cursor: pointer;
     a {
       color: #666;
     }
+    &:hover,
+    &.active {
+      color: #409eff;
+    }
   }
+}
+.cate-list {
+  min-height: 100px;
+}
+.el-pagination {
+  margin-top: 1.5rem;
 }
 </style>

@@ -6,7 +6,7 @@
     <div class="hot-article-list">
       <ul>
         <li v-for="row in hotArticleList" :key="row.id">
-          <router-link :to="{ name: 'detail', params: { id: row.id } }" >{{
+          <router-link :to="{ name: 'detail', params: { id: row.id } }">{{
             row.title
           }}</router-link>
         </li>
@@ -42,10 +42,16 @@ export default {
 <style lang="scss" scoped>
 .hot-article-list {
   li {
-    line-height: 1.8;
+    font-size: 15px;
   }
   a {
+    display: block;
     color: #333;
+    line-height: 30px;
+    height: 30px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space:nowrap;
   }
 }
 </style>
