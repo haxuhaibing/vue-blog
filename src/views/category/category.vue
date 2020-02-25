@@ -108,6 +108,7 @@ export default {
             this.total = this.articleList.length;
           } else {
             this.isData = true;
+            this.articleList = [];
           }
           this.cateListLoading = false;
           this.getPaginationList();
@@ -143,7 +144,7 @@ export default {
     onCate(tag, id) {
       this.isData = false;
       this.categoryId = id;
-        this.currentList=[];
+      this.currentList = [];
       this.cateListLoading = true;
       this.$router.push({ path: `/category/${tag}` });
     },

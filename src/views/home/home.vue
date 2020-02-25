@@ -33,7 +33,6 @@
 </template>
 
 <script>
-
 import HotArticle from "@/components/HotArticle.vue";
 export default {
   name: "home",
@@ -45,7 +44,9 @@ export default {
   created() {
     this.getArticleList();
   },
-  mounted() {},
+  mounted() {
+ 
+  },
   methods: {
     getArticleList() {
       this.post("/article/list").then(res => {

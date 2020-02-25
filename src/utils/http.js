@@ -6,7 +6,7 @@ var isDev = process.env.NODE_ENV === 'production'
 if (isDev) {
   axios.defaults.baseURL = 'http://api.xuhaibing.com/v1'
 } else {
-  axios.defaults.baseURL = 'http://api.xuhaibing.io/v1'
+  axios.defaults.baseURL = 'http://api.xuhaibing.com/v1'
 }
 // axios 配置
 axios.defaults.timeout = 5000

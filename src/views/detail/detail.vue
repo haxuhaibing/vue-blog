@@ -106,7 +106,7 @@ export default {
             // "|",
             "bold",
             "italic",
-            "link",
+            // "link",
             // "bulletedList",
             // "numberedList",
             // "|",
@@ -165,7 +165,7 @@ export default {
       this.post("article/getComments", {
         pid: this.id
       }).then(res => {
-        //console.log("获取评论", res);
+       console.log("获取评论", res);
         this.commentsList = res.data;
       });
     }

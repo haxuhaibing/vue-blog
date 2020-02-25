@@ -3,26 +3,24 @@
     <div style="margin-top:15px;">
       <div class="container">
         <div class="form-group">
-          <label for="exampleInputEmail1">用户名</label>
+          <label for="user">用户名</label>
           <input
             type="text"
             class="form-control"
-            id="exampleInputEmail1"
+            id="user"
             v-model="username"
           />
         </div>
         <div class="form-group">
-          <label for="exampleInputPassword1">密码</label>
+          <label for="password">密码</label>
           <input
             type="password"
             class="form-control"
             v-model="password"
-            id="exampleInputPassword1"
+            id="password"
           />
         </div>
-        <button type="submit" class="btn btn-primary" @click="submit">
-          确定
-        </button>
+        <input type="submit" class="btn btn-primary" @click="submit" />
       </div>
     </div>
   </div>
@@ -36,7 +34,9 @@ export default {
       password: "123456"
     };
   },
-  mounted() {},
+  mounted() {
+ 
+  },
   methods: {
     submit() {
       this.post("user/login", {
