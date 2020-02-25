@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-9">
-          <div class="article-list">
+          <div class="article-list v-model v-shadow">
             <div
               class="article-list-item"
               v-for="row in articleList"
@@ -44,9 +44,7 @@ export default {
   created() {
     this.getArticleList();
   },
-  mounted() {
- 
-  },
+  mounted() {},
   methods: {
     getArticleList() {
       this.post("/article/list").then(res => {
@@ -64,8 +62,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.article-list {
+  margin-top: 16px;
+  padding-top: 0;
+}
+
 .article-list-item {
-  padding: 15px 0;
+  padding: 16px 0;
   border-bottom: 1px solid #f4f4f4;
   .title {
     font-size: 24px;
@@ -88,6 +91,10 @@ export default {
     padding: 2px 10px;
     font-size: 14px;
     color: #3d3d3d;
+  }
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
   }
 }
 </style>

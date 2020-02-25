@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <Login></Login>
     <Header v-show="!$route.meta.isHideHeader"></Header>
     <router-view />
     <Footer v-show="!$route.meta.isHideFooter"></Footer>
@@ -8,6 +9,7 @@
 <script>
 import Header from "@/components/Header.vue";
 import Footer from "@/components/Footer.vue";
+import Login from "@/components/Login.vue";
 export default {
   data() {
     return {};
@@ -15,7 +17,8 @@ export default {
   methods: {},
   components: {
     Header,
-    Footer
+    Footer,
+    Login
   }
 };
 </script>
@@ -34,5 +37,4 @@ a {
 }
 #app {
 }
-
 </style>

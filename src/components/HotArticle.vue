@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="hot-article">
+  <div class="hot-article v-model v-shadow">
     <div class="headline-title">
       <h5>近期热门 - 点击最多</h5>
     </div>
@@ -40,7 +40,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.hot-article{
+
+}
 .hot-article-list {
+  ul{
+    margin-bottom: 0;
+  }
+ 
   li {
     font-size: 15px;
   }

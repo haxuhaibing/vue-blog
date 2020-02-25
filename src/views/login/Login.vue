@@ -35,7 +35,7 @@ export default {
     };
   },
   mounted() {
- 
+
   },
   methods: {
     submit() {

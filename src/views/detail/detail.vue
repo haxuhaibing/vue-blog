@@ -1,8 +1,9 @@
 <template lang="html">
   <div class="container detail-container">
+
     <div class="row">
       <div class="col-lg-9">
-        <div class="detail-content">
+        <div class="detail-content v-model v-shadow">
           <div class="detail-title">
             <h1>{{ detail.title }}</h1>
           </div>
@@ -26,7 +27,7 @@
           </div>
           <div class="detail-desc" v-html="detail.contents" v-highlight></div>
         </div>
-        <div class="post-comment">
+        <div class="post-comment v-model v-shadow mt15">
           <div class="index-headline">
             <h4>评论列表</h4>
           </div>
@@ -54,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div class="article-comments-content">
+        <div class="article-comments-content v-model v-shadow mt15">
           <div class="index-headline">
             <h4>评论列表</h4>
           </div>
@@ -165,7 +166,7 @@ export default {
       this.post("article/getComments", {
         pid: this.id
       }).then(res => {
-       console.log("获取评论", res);
+        console.log("获取评论", res);
         this.commentsList = res.data;
       });
     }
@@ -234,7 +235,7 @@ export default {
 .article-comments-item .comment {
   color: #333;
   font-size: 0.8rem;
-  margin-top: 0.5rem;
+  margin-top: 0.2rem;
 }
 .article-comments-item .comment img {
   max-width: 200px;

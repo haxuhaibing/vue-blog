@@ -9,6 +9,11 @@
         </div>
         <div class="col-9 ">
           <div class="row justify-content-end align-items-center">
+            <!-- <div class="col-auto no-getter">
+              <el-input placeholder="请输入内容" v-model="search" size="small">
+                <i slot="prefix" class="el-input__icon el-icon-search"></i>
+              </el-input>
+            </div> -->
             <div class="col-auto">
               <ul class="nav">
                 <li><router-link to="/home">首页</router-link></li>
@@ -20,8 +25,8 @@
                 <li>
                   <router-link to="/about">关于我</router-link>
                 </li>
-                <li v-if="!userInfo">
-                  <router-link to="/login">登录</router-link>
+                <li v-if="!userInfo" @click="onLogin">
+                  登录
                 </li>
               </ul>
             </div>
@@ -54,11 +59,14 @@
 import { mapMutations } from "vuex";
 export default {
   data() {
-    return {};
+    return { search: "" };
   },
   mounted() {},
   methods: {
-    ...mapMutations(["LOGIN_OUT"])
+    ...mapMutations(["LOGIN_OUT"]),
+    onLogin() {
+        this.$store.commit("LOGIN_STATUS", true);
+    }
   },
   computed: {
     userInfo() {
@@ -72,6 +80,7 @@ export default {
 header {
   border-bottom: 1px solid #e7e7e7;
   padding: 8px 0;
+  background-color: #fff;
 }
 
 .logo {

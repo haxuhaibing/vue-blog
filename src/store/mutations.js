@@ -8,6 +8,9 @@ export default {
   LOGIN_OUT() {
     sessionStorage.removeItem('userInfo')
     this.state.userInfo = ''
-  }
+  },
+  LOGIN_STATUS(state, payload) {
+    this.state.isLogin = payload
+  },
 
 }
