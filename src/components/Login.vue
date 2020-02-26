@@ -1,8 +1,8 @@
 <template lang="html">
   <el-dialog
     title="登录"
-    :visible.sync="dialogVisible"
-    width="30%"
+    :visible.sync="isLogin"
+    width="360px"
     :before-close="handleClose"
     class="login-form"
   >
@@ -36,7 +36,9 @@
 </template>
 
 <script>
+// import { mapState } from "vuex";
 export default {
+  name: "login",
   data() {
     var validatePassword = (rule, value, callback) => {
       if (value === "") {
@@ -54,7 +56,6 @@ export default {
     };
 
     return {
-      dialogVisible: this.$store.state.isLogin,
       ruleForm: {
         username: "xuhaibing",
         password: "123456"
@@ -67,31 +68,25 @@ export default {
   },
   methods: {
     submitForm() {
-      this.dialogVisible = false;
       this.post("user/login", {
         username: this.ruleForm.username,
         password: this.ruleForm.password
       }).then(res => {
         console.log("登录", res);
         if (res.code == 200) {
+          this.$store.commit("LOGIN_STATUS", false);
           this.$store.commit("SET_USER", JSON.stringify(res.data));
         }
       });
     },
     handleClose() {
-      this.dialogVisible = false;
+      this.isLogin = false;
       this.$store.commit("LOGIN_STATUS", false);
     }
   },
   computed: {
     isLogin() {
       return this.$store.state.isLogin;
-    }
-  },
-  watch: {
-    isLogin(val) {
-      this.dialogVisible = val;
-      console.log("变化了");
     }
   }
 };

@@ -16,15 +16,6 @@ const routes = [{
     }
   },
   {
-    path: '/login',
-    name: 'login',
-    component: () => import( /* webpackChunkName: "about" */ '../views/login/Login.vue'),
-    meta: {
-      title: '登录',
-      isHideHeader: true
-    }
-  },
-  {
     path: '/detail/:id',
     name: 'detail',
     component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue'),
@@ -51,6 +42,27 @@ const routes = [{
     path: '/category',
     redirect: {
       path: '/category/notes'
+    }
+  }, {
+    path: '/user/:id',
+    name: 'user',
+    component: () => import( /* webpackChunkName: "about" */ '../views/user/user.vue'),
+    children: [{
+      path: '/user/article',
+      name: 'userArticle',
+      component: () => import( /* webpackChunkName: "about" */ '../views/user/article.vue'),
+      meta: {
+        title: '用户中心-文章管理' 
+      }
+    }],
+    meta: {
+      title: '用户中心',
+      isHideFooter: true
+    }
+  }, {
+    path: '/user',
+    redirect: {
+      name: 'userArticle'
     }
   }
 

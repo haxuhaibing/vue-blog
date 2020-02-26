@@ -32,6 +32,7 @@ export default {
   name: "publish",
   data() {
     return {
+      detail: "",
       title: "",
       tag: "",
       tags: [],
@@ -68,18 +69,37 @@ export default {
     this.post("cate/cateType").then(res => {
       if (res.code == 200) {
         this.tags = res.data;
+        if (this.$route.query.edit) {
+          this.getArticle();
+        }
       }
     });
   },
   methods: {
+    getArticle() {
+      this.post("article/detail", {
+        id: this.$route.query.edit
+      }).then(res => {
+        console.log("获取详情", res);
+        this.detail = res.data;
+        this.contents = res.data.contents;
+        this.title = res.data.title;
+        for (let item of this.tags ) {
+          if (res.data.tags == item.name) {
+            this.tag = item.id;
+          }
+        }
+      });
+    },
     onSubmit() {
       this.post("article/publishArticle", {
         title: this.title,
         contents: this.contents,
         cate_id: this.tag,
-        user_id: this.$store.state.userInfo.id
+        user_id: this.$store.state.userInfo.id,
+        edit_id:this.$route.query.edit
       }).then(res => {
-        console.log(res);
+        console.log('submit',res);
         if (res.code == 200) {
         }
       });

@@ -10,7 +10,7 @@ export default {
     this.state.userInfo = ''
   },
   LOGIN_STATUS(state, payload) {
-    this.state.isLogin = payload
+    this.state.isLogin = payload 
   },
 
 }

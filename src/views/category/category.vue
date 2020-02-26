@@ -3,7 +3,7 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-9">
-          <div class="category-nav">
+          <div class="category-nav v-model v-shadow">
             <div class="category-nav-title">
               分类：
             </div>
@@ -20,33 +20,36 @@
               </ul>
             </div>
           </div>
-          <div class="headline-title mt15">
-            <h4>文章列表</h4>
-          </div>
-          <div
-            class="cate-list"
-            v-loading="cateListLoading"
-            element-loading-text="拼命加载中"
-          >
-            <div
-              class="article-list-item"
-              v-for="row in currentList"
-              :key="row.id"
-            >
-              <h2 class="title">
-                <router-link :to="{ name: 'detail', params: { id: row.id } }">{{
-                  row.title
-                }}</router-link>
-              </h2>
-              <div class="desc" v-html="row.contents" v-highlight></div>
-              <div class="tags-date">
-                <div class="tags">
-                  <span>{{ row.tags }}</span>
-                </div>
-                <div class="date">{{ row.time }}</div>
-              </div>
+          <div class="v-model v-shadow mt15">
+            <div class="headline-title ">
+              <h4>文章列表</h4>
             </div>
-            <div v-if="isData">暂无数据！</div>
+            <div
+              class="cate-list"
+              v-loading="cateListLoading"
+              element-loading-text="拼命加载中"
+            >
+              <div
+                class="article-list-item"
+                v-for="row in currentList"
+                :key="row.id"
+              >
+                <h2 class="title">
+                  <router-link
+                    :to="{ name: 'detail', params: { id: row.id } }"
+                    >{{ row.title }}</router-link
+                  >
+                </h2>
+                <div class="desc" v-html="row.contents" v-highlight></div>
+                <div class="tags-date">
+                  <div class="tags">
+                    <span>{{ row.tags }}</span>
+                  </div>
+                  <div class="date">{{ row.time }}</div>
+                </div>
+              </div>
+              <div v-if="isData">暂无数据！</div>
+            </div>
           </div>
 
           <el-pagination

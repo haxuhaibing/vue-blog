@@ -33,18 +33,18 @@
             <div class="col-auto" v-if="userInfo">
               <el-dropdown>
                 <span class="el-dropdown-link">
-                  <el-avatar :size="30" :src="userInfo.avatar"></el-avatar>
+                  <router-link to="/user">
+                    <el-avatar :size="30" :src="userInfo.avatar"></el-avatar>
+                  </router-link>
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                    ><router-link to="/publish"
-                      >发布文章</router-link
-                    ></el-dropdown-item
-                  >
+                  <el-dropdown-item>
+                    <router-link to="/publish">发布文章</router-link>
+                  </el-dropdown-item>
                   <el-dropdown-item>资料与账户</el-dropdown-item>
-                  <el-dropdown-item
-                    ><span @click="LOGIN_OUT">退出</span></el-dropdown-item
-                  >
+                  <el-dropdown-item>
+                    <div @click="LOGIN_OUT">退出</div>
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </div>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 export default {
   data() {
     return { search: "" };
@@ -65,13 +65,19 @@ export default {
   methods: {
     ...mapMutations(["LOGIN_OUT"]),
     onLogin() {
-        this.$store.commit("LOGIN_STATUS", true);
+      this.$store.commit("LOGIN_STATUS", true);
     }
   },
   computed: {
-    userInfo() {
-      return this.$store.state.userInfo;
-    }
+    //1.普通函数获取
+    // userInfo() {
+    //   return this.$store.state.userInfo;
+    // }
+
+    //3.借助mapState对象展开运算符
+    ...mapState({
+      userInfo: state => state.userInfo
+    })
   }
 };
 </script>
