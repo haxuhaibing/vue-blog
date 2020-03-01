@@ -1,56 +1,46 @@
 <template lang="html">
   <header>
     <div class="container">
-      <div class="row">
-        <div class="col-3">
-          <router-link :to="{ name: 'home' }">
-            <img class="logo" src="@/assets/images/logo.png" alt="" />
-          </router-link>
+      <a-row type="flex" justify="space-between" align="middle">
+        <router-link :to="{ name: 'home' }">
+          <img class="logo" src="@/assets/images/logo.png" alt="" />
+        </router-link>
+        <div class="header-right">
+          <ul class="nav">
+            <li><router-link to="/home">首页</router-link></li>
+            <li>
+              <router-link to="/category">
+                分类
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/about">关于我</router-link>
+            </li>
+            <li v-if="!userInfo" @click="onLogin">
+              登录
+            </li>
+          </ul>
+          <a-dropdown v-if="userInfo">
+            <a-avatar
+              class="ant-dropdown-link"
+              :size="30"
+              :src="userInfo.avatar"
+            ></a-avatar>
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <router-link to="/user">个人主页</router-link>
+              </a-menu-item>
+              <a-menu-item>
+                <router-link to="/publish">发布文章</router-link>
+              </a-menu-item>
+
+              <a-menu-item>
+                <div @click="LOGIN_OUT">退出</div>
+              </a-menu-item>
+            </a-menu>
+          </a-dropdown>
         </div>
-        <div class="col-9 ">
-          <div class="row justify-content-end align-items-center">
-            <!-- <div class="col-auto no-getter">
-              <el-input placeholder="请输入内容" v-model="search" size="small">
-                <i slot="prefix" class="el-input__icon el-icon-search"></i>
-              </el-input>
-            </div> -->
-            <div class="col-auto">
-              <ul class="nav">
-                <li><router-link to="/home">首页</router-link></li>
-                <li>
-                  <router-link to="/category">
-                    分类
-                  </router-link>
-                </li>
-                <li>
-                  <router-link to="/about">关于我</router-link>
-                </li>
-                <li v-if="!userInfo" @click="onLogin">
-                  登录
-                </li>
-              </ul>
-            </div>
-            <div class="col-auto" v-if="userInfo">
-              <el-dropdown>
-                <span class="el-dropdown-link">
-                  <router-link to="/user">
-                    <el-avatar :size="30" :src="userInfo.avatar"></el-avatar>
-                  </router-link>
-                </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item>
-                    <router-link to="/publish">发布文章</router-link>
-                  </el-dropdown-item>
-                  <el-dropdown-item>资料与账户</el-dropdown-item>
-                  <el-dropdown-item>
-                    <div @click="LOGIN_OUT">退出</div>
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
-          </div>
-        </div>
-      </div>
+      </a-row>
     </div>
   </header>
 </template>
@@ -92,7 +82,18 @@ header {
 .logo {
   height: 40px;
 }
+.header-right {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  align-items: center;
+}
 .nav {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  align-items: center;
+
   li {
     margin-left: 16px;
     line-height: 40px;
@@ -103,7 +104,7 @@ header {
     color: #333;
   }
 }
-.el-avatar > img {
-  cursor: pointer !important;
+.ant-avatar {
+  margin-left: 16px;
 }
 </style>

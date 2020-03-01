@@ -1,34 +1,75 @@
 <template lang="html">
-  <div class="user-article">
-    <el-table
-      :data="articleList"
-      border
-      type="index"
-      :index="indexMethod"
-      style="width: 100%"
-    >
-      <el-table-column prop="title" label="标题" width="350"> </el-table-column>
-      <el-table-column prop="tags" label="分类" width="120"> </el-table-column>
-      <el-table-column prop="time" label="时间" width="220"> </el-table-column>
-      <el-table-column fixed="right" label="操作" width="120">
-        <template slot-scope="scope">
-          <el-button @click="onView(scope.row)" type="text" size="small"
-            >查看</el-button
-          >
-          <el-button @click="onEdit(scope.row)" type="text" size="small"
-            >编辑</el-button
-          >
-          <el-button @click="onDelete(scope)" type="text" size="small"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+  <div class="user-article v-model v-shadow">
+    <a-table :columns="columns" :dataSource="articleList"  >
+      <a slot="action" slot-scope="text, record, index" href="javascript:;">
+        <a @click="() => edit(record, index)">编辑</a>
+        <a-divider type="vertical" />
+        <a @click="() => del(record, index)">删除</a>
+      </a>
+    </a-table>
   </div>
 </template>
-
 <script>
+const columns = [
+  {
+    title: "标题",
+    width: 360,
+    dataIndex: "title",
+    key: "title"
+  },
+  { title: "分类", width: 100, dataIndex: "tags", key: "tags" },
+  { title: "时间", width: 160, dataIndex: "time", key: "time" },
+  {
+    title: "操作",
+    key: "operation",
+    fixed: "right",
+    width: 120,
+    scopedSlots: { customRender: "action" }
+  }
+];
 export default {
+  data() {
+    return {
+      columns,
+      articleList: []
+    };
+  },
+  created() {
+    this.getArticleList();
+  },
+  methods: {
+    getArticleList() {
+      this.post("/article/list").then(res => {
+        console.log("文章列表", res);
+        if (res.code == 200) {
+          this.articleList = res.data;
+        }
+      });
+    },
+    edit(record, index) {
+      this.$router.push({
+        path: `/publish?edit=${record.id}`
+      });
+    },
+    del(record, index) {
+      let id = record.id;
+      this.post("/article/delete", {
+        id: id
+      }).then(response => {
+        this.articleList.splice(index, 1);
+        if (response.code == 200) {
+          this.$message({
+            message: response.msg,
+            type: "success"
+          });
+        }
+      });
+    }
+  }
+};
+</script>
+
+<!-- export default {
   data() {
     return {
       articleList: []
@@ -75,8 +116,7 @@ export default {
       });
     }
   }
-};
-</script>
+};   -->
 
 <style lang="css" scoped>
 #user{

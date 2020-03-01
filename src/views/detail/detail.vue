@@ -1,44 +1,33 @@
 <template lang="html">
   <div class="container detail-container">
-
-    <div class="row">
-      <div class="col-lg-9">
+    <a-row :gutter="16">
+      <a-col :lg="{ span: 18 }">
         <div class="detail-content v-model v-shadow">
           <div class="detail-title">
             <h1>{{ detail.title }}</h1>
           </div>
           <div class="detail-propety">
-            <div
-              class="row no-gutters align-items-center"
-              style="margin:16px 0"
-            >
-              <div class="col-aotu">
-                <div class="detail-propety-tags">
-                  <el-tag size="small">{{ detail.tags }}</el-tag>
+            <a-row :gutter="16" type="flex" justify="start" align="middle">
+              <a-col>
+                <div class="detail-tags">
+                  <a-tag color="blue">{{ detail.tags }}</a-tag>
                 </div>
-              </div>
-              <div class="col-aotu">
+              </a-col>
+              <a-col>
                 <div class="detail-propety-publish">
                   <span>发布于</span>
                   <span>{{ detail.time }}</span>
-                </div>
-              </div>
-            </div>
+                </div></a-col
+              >
+            </a-row>
           </div>
           <div class="detail-desc" v-html="detail.contents" v-highlight></div>
         </div>
         <div class="post-comment v-model v-shadow mt15">
-          <div class="index-headline">
-            <h4>评论列表</h4>
-          </div>
+          <h2>发布评论</h2>
           <div class="post-comment-form">
             <div class="form-group" v-if="!username">
-              <input
-                type="text"
-                placeholder="昵称"
-                class="form-control"
-                v-model="nickname"
-              />
+              <a-input v-model="nickname" placeholder="昵称" />
             </div>
             <div class="form-group">
               <ckeditor
@@ -49,16 +38,12 @@
               </ckeditor>
             </div>
             <div class="form-group">
-              <button class="btn btn-primary" type="submit" @click="onComment">
-                发布评论
-              </button>
+              <a-button type="primary" @click="onComment">发布评论</a-button>
             </div>
           </div>
         </div>
         <div class="article-comments-content v-model v-shadow mt15">
-          <div class="index-headline">
-            <h4>评论列表</h4>
-          </div>
+          <h2>评论列表</h2>
           <div class="article-comments-list">
             <div
               class="article-comments-item"
@@ -78,11 +63,11 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="col-lg-3">
+      </a-col>
+      <a-col :lg="{ span: 6 }">
         <HotArticle></HotArticle>
-      </div>
-    </div>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -152,11 +137,7 @@ export default {
       }).then(res => {
         console.log("提交评论", res);
         if (res.code == 200) {
-          this.$message({
-            showClose: true,
-            message: "评论成功",
-            type: "success"
-          });
+          this.$message.success("评论成功");
           this.contents = "";
           this.getComments();
         }
@@ -187,8 +168,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.detail-container {
-  margin-top: 15px;
+.detail-content {
+  margin-top: 16px;
 }
 .article-comments-list {
   margin-top: 15px;
@@ -250,10 +231,11 @@ export default {
     border-radius: 5px;
     padding: 8px;
   }
+  .form-group {
+    margin-top: 16px;
+  }
 }
-.detail-propety-tags {
-  margin-right: 8px;
-}
+
 .detail-propety-publish {
   color: #6c757d;
   font-size: 12px;
@@ -261,5 +243,14 @@ export default {
   span {
     margin-right: 8px;
   }
+}
+
+.detail-tags {
+  .ant-tag {
+    margin-right: 0;
+  }
+}
+.detail-desc {
+  margin-top: 16px;
 }
 </style>

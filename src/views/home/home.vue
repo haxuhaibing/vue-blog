@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="index-content">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-9">
+      <a-row :gutter="16">
+        <a-col :lg="{ span: 18 }">
           <div class="article-list v-model v-shadow">
             <div
               class="article-list-item"
@@ -23,11 +23,11 @@
               </div>
             </div>
           </div>
-        </div>
-        <div class="col-lg-3" style="margin-top:15px;">
+        </a-col>
+        <a-col :lg="{ span: 6 }">
           <HotArticle></HotArticle>
-        </div>
-      </div>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>

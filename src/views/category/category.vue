@@ -1,8 +1,8 @@
 <template lang="html">
   <div class="category-container">
     <div class="container">
-      <div class="row">
-        <div class="col-lg-9">
+      <a-row :gutter="16">
+        <a-col :lg="{ span: 18 }">
           <div class="category-nav v-model v-shadow">
             <div class="category-nav-title">
               分类：
@@ -20,54 +20,39 @@
               </ul>
             </div>
           </div>
-          <div class="v-model v-shadow mt15">
-            <div class="headline-title ">
-              <h4>文章列表</h4>
-            </div>
-            <div
-              class="cate-list"
-              v-loading="cateListLoading"
-              element-loading-text="拼命加载中"
-            >
-              <div
-                class="article-list-item"
-                v-for="row in currentList"
-                :key="row.id"
-              >
-                <h2 class="title">
-                  <router-link
-                    :to="{ name: 'detail', params: { id: row.id } }"
-                    >{{ row.title }}</router-link
-                  >
-                </h2>
-                <div class="desc" v-html="row.contents" v-highlight></div>
-                <div class="tags-date">
-                  <div class="tags">
-                    <span>{{ row.tags }}</span>
+          <div class="v-model v-shadow cate-list-container">
+            <h2>文章列表</h2>
+            <a-spin tip="加载中..." :spinning="cateListLoading">
+              <div class="cate-list">
+                <div
+                  class="article-list-item"
+                  v-for="row in currentList"
+                  :key="row.id"
+                >
+                  <h2 class="title">
+                    <router-link
+                      :to="{ name: 'detail', params: { id: row.id } }"
+                      >{{ row.title }}</router-link
+                    >
+                  </h2>
+                  <div class="desc" v-html="row.contents" v-highlight></div>
+                  <div class="tags-date">
+                    <div class="tags">
+                      <span>{{ row.tags }}</span>
+                    </div>
+                    <div class="date">{{ row.time }}</div>
                   </div>
-                  <div class="date">{{ row.time }}</div>
                 </div>
+                <a-empty v-if="isData" description="暂无更多" />
               </div>
-              <div v-if="isData">暂无数据！</div>
-            </div>
+            </a-spin>
           </div>
-
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :page-size="setps"
-            :total="total"
-            :current-page.sync="currentPage"
-            :hide-on-single-page="isPagination"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-          >
-          </el-pagination>
-        </div>
-        <div class="col-lg-3">
+          <a-pagination v-model="currentPage" :total="total" :hideOnSinglePage="true" />
+        </a-col>
+        <a-col :lg="{ span: 6 }">
           <HotArticle></HotArticle>
-        </div>
-      </div>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>
@@ -170,9 +155,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.category-container {
-  margin-top: 15px;
-}
 .article-list-item {
   padding: 15px 0;
   border-bottom: 1px solid #f4f4f4;
@@ -204,6 +186,7 @@ export default {
   display: -ms-flex;
   display: flex;
   border-bottom: 1px solid #f1f1f1;
+  margin-top: 16px;
 }
 .category-nav-title {
   font-size: 1rem;
@@ -233,5 +216,8 @@ export default {
 }
 .el-pagination {
   margin-top: 1.5rem;
+}
+.cate-list-container {
+  margin-top: 16px;
 }
 </style>

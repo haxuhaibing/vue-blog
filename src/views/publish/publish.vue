@@ -1,29 +1,41 @@
 <template lang="html">
-  <div class="container publish-container">
-    <el-form :model="formLabelAlign">
-      <el-form-item>
-        <el-input v-model="title" placeholder="请输入标题"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-select v-model="tag" placeholder="请选择分类">
-          <el-option
-            v-for="item in tags"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
-          >
-          </el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <ckeditor :editor="editor" v-model="contents" :config="editorConfig">
-        </ckeditor>
-      </el-form-item>
+  <div class="container ">
+    <div class="v-model v-shadow mt15">
+      <a-row>
+        <a-col :lg="{ span: 24 }">
+          <a-form @submit="onSubmit">
+            <a-form-item>
+              <a-input v-model="title" placeholder="请输入标题" />
+            </a-form-item>
 
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">发布文章</el-button>
-      </el-form-item>
-    </el-form>
+            <a-form-item>
+              <a-select
+                :defaultValue="defaultValue"
+                style="width: 120px"
+                @change="handleChange"
+              >
+                <a-select-option v-for="item in tags" :key="item.id">{{
+                  item.name
+                }}</a-select-option>
+              </a-select>
+            </a-form-item>
+            <a-form-item>
+              <ckeditor
+                :editor="editor"
+                v-model="contents"
+                :config="editorConfig"
+              >
+              </ckeditor>
+            </a-form-item>
+            <a-form-item>
+              <a-button type="primary" @click="onSubmit"
+                >发布文章</a-button
+              ></a-form-item
+            >
+          </a-form></a-col
+        >
+      </a-row>
+    </div>
   </div>
 </template>
 
@@ -32,15 +44,11 @@ export default {
   name: "publish",
   data() {
     return {
+      defaultValue: "请选择分类",
       detail: "",
       title: "",
       tag: "",
       tags: [],
-      formLabelAlign: {
-        name: "",
-        region: "",
-        type: ""
-      },
       editor: ClassicEditor,
       contents: "",
       editorConfig: {
@@ -84,9 +92,11 @@ export default {
         this.detail = res.data;
         this.contents = res.data.contents;
         this.title = res.data.title;
-        for (let item of this.tags ) {
+        for (let item of this.tags) {
           if (res.data.tags == item.name) {
             this.tag = item.id;
+            this.defaultValue = item.name;
+            break;
           }
         }
       });
@@ -97,12 +107,16 @@ export default {
         contents: this.contents,
         cate_id: this.tag,
         user_id: this.$store.state.userInfo.id,
-        edit_id:this.$route.query.edit
+        edit_id: this.$route.query.edit
       }).then(res => {
-        console.log('submit',res);
+        console.log("submit", res);
         if (res.code == 200) {
         }
       });
+    },
+    handleChange(value) {
+      this.tag = value;
+      console.log(value);
     }
   }
 };

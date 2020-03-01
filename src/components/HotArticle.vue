@@ -1,8 +1,6 @@
 <template lang="html">
   <div class="hot-article v-model v-shadow">
-    <div class="headline-title">
-      <h5>近期热门 - 点击最多</h5>
-    </div>
+      <h2>近期热门 - 点击最多</h2>
     <div class="hot-article-list">
       <ul>
         <li v-for="row in hotArticleList" :key="row.id">
@@ -40,14 +38,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.hot-article{
-
+.hot-article {
+  margin-top: 16px;
 }
 .hot-article-list {
-  ul{
+  ul {
     margin-bottom: 0;
   }
- 
+
   li {
     font-size: 15px;
   }
@@ -58,7 +56,7 @@ export default {
     height: 30px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space:nowrap;
+    white-space: nowrap;
   }
 }
 </style>
