@@ -51,7 +51,7 @@ export default {
   mounted() {},
   methods: {
     check() {
-      this.form.validateFields((err,values) => {
+      this.form.validateFields((err, values) => {
         if (!err) {
           let username = values.username;
           let password = values.password;

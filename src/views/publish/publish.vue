@@ -14,9 +14,13 @@
                 style="width: 120px"
                 @change="handleChange"
               >
-                <a-select-option v-for="item in tags" :key="item.id">{{
-                  item.name
-                }}</a-select-option>
+                <a-select-option
+                  v-for="item in tags"
+                  :key="item.id"
+                  :value="item.name"
+                >
+                  {{ item.name }}
+                </a-select-option>
               </a-select>
             </a-form-item>
             <a-form-item>
@@ -40,6 +44,7 @@
 </template>
 
 <script>
+
 export default {
   name: "publish",
   data() {
@@ -69,6 +74,10 @@ export default {
             "codeBlock"
           ]
         },
+        ckfinder: {
+          uploadUrl:
+            "http://api.xuhaibing.com/v1/upload/ckimage"
+        },
         language: "zh-cn"
       }
     };
@@ -93,10 +102,9 @@ export default {
         this.contents = res.data.contents;
         this.title = res.data.title;
         for (let item of this.tags) {
-          if (res.data.tags == item.name) {
+          if (item.name == res.data.tags) {
             this.tag = item.id;
             this.defaultValue = item.name;
-            break;
           }
         }
       });

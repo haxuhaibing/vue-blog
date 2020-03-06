@@ -1,6 +1,6 @@
 <template lang="html">
   <div class="user-article v-model v-shadow">
-    <a-table :columns="columns" :dataSource="articleList"  >
+    <a-table :columns="columns" :dataSource="articleList">
       <a slot="action" slot-scope="text, record, index" href="javascript:;">
         <a @click="() => edit(record, index)">编辑</a>
         <a-divider type="vertical" />
@@ -42,7 +42,12 @@ export default {
       this.post("/article/list").then(res => {
         console.log("文章列表", res);
         if (res.code == 200) {
-          this.articleList = res.data;
+          let data = res.data;
+          let arryNew = [];
+          data.map((item, index) => {
+            arryNew.push(Object.assign({}, item, { key: index }));
+          });
+          this.articleList = arryNew;
         }
       });
     },
