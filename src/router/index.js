@@ -16,7 +16,7 @@ const routes = [{
     }
   },
   {
-    path: '/detail/:id',
+    path: '/detail/:href',
     name: 'detail',
     component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue'),
     meta: {
@@ -52,7 +52,7 @@ const routes = [{
       name: 'userArticle',
       component: () => import( /* webpackChunkName: "about" */ '../views/user/article.vue'),
       meta: {
-        title: '用户中心-文章管理' 
+        title: '用户中心-文章管理'
       }
     }],
     meta: {

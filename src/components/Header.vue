@@ -51,7 +51,9 @@ export default {
   data() {
     return { search: "" };
   },
-  mounted() {},
+  mounted() {
+   
+  },
   methods: {
     ...mapMutations(["LOGIN_OUT"]),
     onLogin() {

@@ -72,7 +72,13 @@
 </template>
 
 <script>
-// import ClassicEditor from "@/assets/ckeditor5/build/ckeditor.js";
+import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
+import EssentialsPlugin from "@ckeditor/ckeditor5-essentials/src/essentials";
+import BoldPlugin from "@ckeditor/ckeditor5-basic-styles/src/bold";
+import ItalicPlugin from "@ckeditor/ckeditor5-basic-styles/src/italic";
+import LinkPlugin from "@ckeditor/ckeditor5-link/src/link";
+import ParagraphPlugin from "@ckeditor/ckeditor5-paragraph/src/paragraph";
+import CodeBlock from "@ckeditor/ckeditor5-code-block/src/codeblock";
 import HotArticle from "@/components/HotArticle.vue";
 export default {
   name: "detail",
@@ -82,31 +88,21 @@ export default {
       commentsList: {},
       nickname: "",
       username: this.$store.state.userInfo.username || "",
-      id: this.$route.params.id,
+      href: this.$route.params.href,
       editor: ClassicEditor,
       contents: "",
       editorConfig: {
+        plugins: [
+          EssentialsPlugin,
+          BoldPlugin,
+          ItalicPlugin,
+          LinkPlugin,
+          ParagraphPlugin,
+          CodeBlock
+        ],
         toolbar: {
-          items: [
-            // "heading",
-            // "|",
-            "bold",
-            "italic",
-            // "link",
-            // "bulletedList",
-            // "numberedList",
-            // "|",
-            // "imageUpload",
-            // "blockQuote",
-            // "insertTable",
-            // "code",
-            "codeBlock"
-            // "|",
-            // "undo",
-            // "redo"
-          ]
-        },
-        language: "zh-cn"
+          items: ["bold", "italic", "link", "undo", "redo", "codeBlock"]
+        }
       }
     };
   },
@@ -117,15 +113,15 @@ export default {
   methods: {
     init() {
       this.getDetail();
-      this.getComments();
     },
     getDetail() {
       this.post("article/detail", {
-        id: this.id
+        href: this.href
       }).then(res => {
-        console.log("获取详情", res);
+       console.log("获取详情", res);
         this.detail = res.data;
         document.title = res.data.title;
+        this.getComments();
       });
     },
     onComment() {
@@ -133,21 +129,23 @@ export default {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
-        pid: this.id
+        cate_id: this.detail.cate_id
       }).then(res => {
-        console.log("提交评论", res);
+      //  console.log("提交评论", res);
         if (res.code == 200) {
           this.$message.success("评论成功");
           this.contents = "";
           this.getComments();
+        } else {
+          this.$message.success("评论失败");
         }
       });
     },
     getComments() {
       this.post("article/getComments", {
-        pid: this.id
+        cate_id: this.detail.cate_id
       }).then(res => {
-        console.log("获取评论", res);
+    //    console.log("获取评论", res);
         this.commentsList = res.data;
       });
     }
@@ -158,8 +156,8 @@ export default {
   watch: {
     $route(to, from) {
       //注意监听的是query还是params
-      if (to.params.id != from.params.id) {
-        this.id = this.$route.params.id;
+      if (to.params.href != from.params.href) {
+        this.href = this.$route.params.href;
         this.init();
       }
     }

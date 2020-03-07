@@ -1,21 +1,6 @@
 <template lang="html">
   <div class="index-content">
     <div class="container">
-      <a-upload
-        name="avatar"
-        listType="picture-card"
-        class="avatar-uploader"
-        :showUploadList="false"
-        action="http://api.xuhaibing.io/v1/upload/image.php"
-        :beforeUpload="beforeUpload"
-        @change="handleChange"
-      >
-        <img v-if="imageUrl" :src="imageUrl" alt="avatar" />
-        <div v-else>
-          <a-icon :type="loading ? 'loading' : 'plus'" />
-          <div class="ant-upload-text">Upload</div>
-        </div>
-      </a-upload>
       <a-row :gutter="16">
         <a-col :lg="{ span: 18 }">
           <div class="article-list v-model v-shadow">
@@ -25,7 +10,7 @@
               :key="row.id"
             >
               <h2 class="title">
-                <router-link :to="{ name: 'detail', params: { id: row.id } }">{{
+                <router-link :to="{ name: 'detail', params: { href: row.href } }">{{
                   row.title
                 }}</router-link>
               </h2>
@@ -64,7 +49,7 @@ export default {
     };
   },
   created() {
-    //  this.getArticleList();
+  this.getArticleList();
   },
   mounted() {},
   methods: {

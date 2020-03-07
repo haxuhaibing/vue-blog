@@ -31,7 +31,7 @@
                 >
                   <h2 class="title">
                     <router-link
-                      :to="{ name: 'detail', params: { id: row.id } }"
+                      :to="{ name: 'detail', params: { href: row.href } }"
                       >{{ row.title }}</router-link
                     >
                   </h2>
@@ -89,7 +89,7 @@ export default {
       this.post("/article/list", {
         cate_id: this.categoryId
       }).then(res => {
-        console.log("文章列表", res);
+      //  console.log("文章列表", res);
         if (res.code == 200) {
           if (res.data) {
             this.articleList = res.data;

@@ -4,7 +4,7 @@
     <div class="hot-article-list">
       <ul>
         <li v-for="row in hotArticleList" :key="row.id">
-          <router-link :to="{ name: 'detail', params: { id: row.id } }">{{
+          <router-link :to="{ name: 'detail', params: { id: row.url } }">{{
             row.title
           }}</router-link>
         </li>
@@ -27,7 +27,7 @@ export default {
   methods: {
     getHotArticleList() {
       this.post("/article/hotList").then(res => {
-        console.log("热门文章", res);
+    //    console.log("热门文章", res);
         if (res.code == 200) {
           this.hotArticleList = res.data;
         }

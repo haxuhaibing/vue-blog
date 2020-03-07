@@ -63,65 +63,13 @@ export default {
       }).then(response => {
         this.articleList.splice(index, 1);
         if (response.code == 200) {
-          this.$message({
-            message: response.msg,
-            type: "success"
-          });
+          this.$message.success(response.msg);
         }
       });
     }
   }
 };
 </script>
-
-<!-- export default {
-  data() {
-    return {
-      articleList: []
-    };
-  },
-  created() {
-    this.getArticleList();
-  },
-  methods: {
-    indexMethod(index) {
-      return index;
-    },
-    getArticleList() {
-      this.post("/article/list").then(res => {
-        console.log("文章列表", res);
-        if (res.code == 200) {
-          this.articleList = res.data;
-        }
-      });
-    },
-    onView(row) {
-      this.$router.push({
-        path: `/detail/${row.id}`
-      });
-    },
-    onEdit(row) {
-      this.$router.push({
-        path: `/publish?edit=${row.id}`
-      });
-    },
-    onDelete(row) {
-      let id = row.row.id;
-      let index = row.$index;
-      this.post("/article/delete", {
-        id: id
-      }).then(response => {
-        this.articleList.splice(index, 1);
-        if (response.code == 200) {
-          this.$message({
-            message: response.msg,
-            type: "success"
-          });
-        }
-      });
-    }
-  }
-};   -->
 
 <style lang="css" scoped>
 #user{

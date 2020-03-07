@@ -17,7 +17,7 @@
                 <a-select-option
                   v-for="item in tags"
                   :key="item.id"
-                  :value="item.name"
+                  :value="item.id"
                 >
                   {{ item.name }}
                 </a-select-option>
@@ -44,7 +44,15 @@
 </template>
 
 <script>
-
+import ClassicEditor from "@ckeditor/ckeditor5-editor-classic/src/classiceditor";
+import EssentialsPlugin from "@ckeditor/ckeditor5-essentials/src/essentials";
+import BoldPlugin from "@ckeditor/ckeditor5-basic-styles/src/bold";
+import ItalicPlugin from "@ckeditor/ckeditor5-basic-styles/src/italic";
+import LinkPlugin from "@ckeditor/ckeditor5-link/src/link";
+import ParagraphPlugin from "@ckeditor/ckeditor5-paragraph/src/paragraph";
+import CodeBlock from "@ckeditor/ckeditor5-code-block/src/codeblock";
+import EasyImage from "@ckeditor/ckeditor5-easy-image/src/easyimage";
+import SimpleUploadAdapter from "@ckeditor/ckeditor5-upload/src/adapters/simpleuploadadapter";
 export default {
   name: "publish",
   data() {
@@ -57,26 +65,29 @@ export default {
       editor: ClassicEditor,
       contents: "",
       editorConfig: {
+        plugins: [
+          EssentialsPlugin,
+          BoldPlugin,
+          ItalicPlugin,
+          LinkPlugin,
+          ParagraphPlugin,
+          CodeBlock,
+          SimpleUploadAdapter,
+          EasyImage
+        ],
         toolbar: {
           items: [
-            "heading",
-            "|",
             "bold",
             "italic",
             "link",
-            "bulletedList",
-            "numberedList",
-            "|",
             "imageUpload",
-            "blockQuote",
-            "insertTable",
-            "code",
+            "undo",
+            "redo",
             "codeBlock"
           ]
         },
-        ckfinder: {
-          uploadUrl:
-            "http://api.xuhaibing.com/v1/upload/ckimage"
+        simpleUpload: {
+          uploadUrl: "http://api.xuhaibing.io/v1/upload/ckimage.php"
         },
         language: "zh-cn"
       }
