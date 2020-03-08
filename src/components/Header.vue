@@ -52,7 +52,7 @@ export default {
     return { search: "" };
   },
   mounted() {
-   
+
   },
   methods: {
     ...mapMutations(["LOGIN_OUT"]),
@@ -77,7 +77,7 @@ export default {
 <style lang="scss" scoped>
 header {
   border-bottom: 1px solid #e7e7e7;
-  padding: 8px 0;
+  padding: 8px 16px;
   background-color: #fff;
 }
 

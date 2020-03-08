@@ -10,9 +10,10 @@
               :key="row.id"
             >
               <h2 class="title">
-                <router-link :to="{ name: 'detail', params: { href: row.href } }">{{
-                  row.title
-                }}</router-link>
+                <router-link
+                  :to="{ name: 'detail', params: { href: row.href } }"
+                  >{{ row.title }}</router-link
+                >
               </h2>
               <div class="desc" v-html="row.contents" v-highlight></div>
               <div class="tags-date">
@@ -34,58 +35,27 @@
 
 <script>
 import HotArticle from "@/components/HotArticle.vue";
-function getBase64(img, callback) {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result));
-  reader.readAsDataURL(img);
-}
+
 export default {
   name: "home",
   data() {
     return {
-      loading: false,
       imageUrl: "",
       articleList: []
     };
   },
   created() {
-  this.getArticleList();
+    this.getArticleList();
   },
   mounted() {},
   methods: {
     getArticleList() {
       this.post("/article/list").then(res => {
-        console.log("文章列表", res);
+        //    console.log("文章列表", res);
         if (res.code == 200) {
-          this.articleList = res.data;
+          this.articleList = res.data || [];
         }
       });
-    },
-    handleChange(info) {
-      if (info.file.status === "uploading") {
-        this.loading = true;
-        return;
-      }
-      if (info.file.status === "done") {
-        let file=info.file;
-        console.log(file);
-        if(file.response.code ==200){
-          this.imageUrl = file.response.data.url.replace('../../','http://api.xuhaibing.io/');
-          this.loading = false;
-        }
-
-      }
-    },
-    beforeUpload(file) {
-      const isJPG = file.type === "image/jpeg";
-      if (!isJPG) {
-        this.$message.error("You can only upload JPG file!");
-      }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        this.$message.error("Image must smaller than 2MB!");
-      }
-      return isJPG && isLt2M;
     }
   },
   components: {
@@ -95,6 +65,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.index-content {
+  padding: 0 16px;
+}
 .article-list {
   margin-top: 16px;
   padding-top: 0;
@@ -104,7 +77,7 @@ export default {
   padding: 16px 0;
   border-bottom: 1px solid #f4f4f4;
   .title {
-    font-size: 24px;
+    font-size: 1.2rem;
     a {
       color: #333;
     }

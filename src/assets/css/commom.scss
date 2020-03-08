@@ -15,11 +15,7 @@ h2 {
   font-size: 1.2rem;
 }
 
-.publish-container {
-  .ck-content {
-    min-height: 400px;
-  }
-}
+
 
 .mt15 {
   margin-top: 1.5rem;
@@ -69,19 +65,4 @@ dl,
 ol,
 ul {
   margin: 0;
-}
-
-div {
-  .ck.ck-toolbar {
-    border: 1px solid #d9d9d9;
-  }
-
-  .ck.ck-editor__main > .ck-editor__editable:not(.ck-focused) {
-    border: 1px solid #d9d9d9;
-  }
-
-  .ck-toolbar__items,
-  .ck-toolbar_grouping {
-    background: #fff!important;
-  }
 }
