@@ -51,7 +51,7 @@ export default {
   methods: {
     getArticleList() {
       this.post("/article/list").then(res => {
-        //    console.log("文章列表", res);
+        console.log("文章列表", res);
         if (res.code == 200) {
           this.articleList = res.data || [];
         }

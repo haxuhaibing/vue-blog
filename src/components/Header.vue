@@ -52,7 +52,7 @@ export default {
     return { search: "" };
   },
   mounted() {
-
+ 
   },
   methods: {
     ...mapMutations(["LOGIN_OUT"]),

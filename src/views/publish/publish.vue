@@ -7,10 +7,9 @@
             <a-form-item>
               <a-input v-model="title" placeholder="请输入标题" />
             </a-form-item>
-
             <a-form-item>
               <a-select
-                :defaultValue="defaultValue"
+                v-model="tag"
                 style="width: 120px"
                 @change="handleChange"
               >
@@ -24,7 +23,10 @@
               </a-select>
             </a-form-item>
             <a-form-item>
-              <Editor @ckeditorContents="ckeditorContents"></Editor>
+              <Editor
+                @ckeditorContents="ckeditorContents"
+                :parentContents="contents"
+              ></Editor>
             </a-form-item>
             <a-form-item>
               <a-button type="primary" @click="onSubmit"
@@ -37,32 +39,41 @@
     </div>
   </div>
 </template>
-
 <script>
 import Editor from "@/components/Editor.vue";
 export default {
   name: "publish",
   data() {
     return {
-      defaultValue: "请选择分类",
       detail: "",
       title: "",
-      tag: "",
+      tag: "0",
       tags: [],
       contents: ""
     };
   },
   mounted() {
-    this.post("cate/cateType").then(res => {
-      if (res.code == 200) {
-        this.tags = res.data;
-        if (this.$route.query.edit) {
-          this.getArticle();
-        }
-      }
-    });
+    this.getCate();
   },
   methods: {
+    getCate() {
+      this.post("cate/cateType").then(res => {
+        if (res.code == 200) {
+          let o = [
+            {
+              id: "0",
+              name: "请选择分类",
+              tag: "请选择分类"
+            }
+          ];
+          this.tags = [...o, ...res.data];
+          //编辑
+          if (this.$route.query.edit) {
+            this.getArticle();
+          }
+        }
+      });
+    },
     getArticle() {
       this.post("article/detail", {
         id: this.$route.query.edit
@@ -74,7 +85,6 @@ export default {
         for (let item of this.tags) {
           if (item.name == res.data.tags) {
             this.tag = item.id;
-            this.defaultValue = item.name;
           }
         }
       });
@@ -89,12 +99,15 @@ export default {
       }).then(res => {
         console.log("submit", res);
         if (res.code == 200) {
+          this.$message.success("发布成功");
+          this.title = "";
+          this.tag = "0";
+          this.contents = "";
         }
       });
     },
     handleChange(value) {
       this.tag = value;
-      console.log(value);
     },
     ckeditorContents(val) {
       this.contents = val;

@@ -30,7 +30,7 @@
               <a-input v-model="nickname" placeholder="昵称" />
             </div>
             <div class="form-group">
-              <Editor @ckeditorContents="ckeditorContents"></Editor>
+              <Editor @ckeditorContents="ckeditorContents" :parentContents="contents"></Editor>
             </div>
             <div class="form-group">
               <a-button type="primary" @click="onComment">发布评论</a-button>
@@ -81,14 +81,15 @@ export default {
         this.getComments();
       });
     },
+    //发布评论
     onComment() {
       this.post("article/comment", {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
-        cate_id: this.detail.cate_id
+        cate_id: this.detail.id
       }).then(res => {
-        //  console.log("提交评论", res);
+        console.log("提交评论", res);
         if (res.code == 200) {
           this.$message.success("评论成功");
           this.contents = "";
@@ -98,14 +99,16 @@ export default {
         }
       });
     },
+    //获取评论列表
     getComments() {
       this.post("article/getComments", {
-        cate_id: this.detail.cate_id
+        cate_id: this.detail.id
       }).then(res => {
-        //    console.log("获取评论", res);
+        console.log("获取评论", res);
         this.commentsList = res.data;
       });
     },
+    //子组件传递给父组件
     ckeditorContents(val) {
       this.contents = val;
     }

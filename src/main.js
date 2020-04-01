@@ -8,9 +8,7 @@ import {
   fetch,
   post
 } from '@/utils/http'
-//highlight.js码高亮配色主题
 import '@/assets/css/github.css'
-
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import '@/assets/css/commom.scss'
