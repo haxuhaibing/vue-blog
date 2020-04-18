@@ -1,7 +1,6 @@
 import axios from 'axios'
-import store from '../store/store'
+import store from '../store'
 import qs from 'qs'
-
 var isDev = process.env.NODE_ENV === 'production'
 if (isDev) {
   axios.defaults.baseURL = 'http://api.xuhaibing.com/v1'
@@ -14,7 +13,7 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;char
 //axiso
 axios.interceptors.request.use(
   config => {
-    let token = store.state.userInfo.token || '';
+    let token = store.state.user.userInfo.token || '';
     if (config.method == 'get') {
       config.params.token = token
     }

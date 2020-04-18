@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
-import store from './store/store'
+import store from './store'
 import axios from 'axios'
 import hljs from 'highlight.js'
 import {
@@ -12,6 +12,7 @@ import '@/assets/css/github.css'
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/antd.css';
 import '@/assets/css/commom.scss'
+import '@/assets/js/iconfont.js'
 Vue.use(Antd);
 Vue.config.productionTip = false
 Vue.prototype.$http = axios

@@ -35,7 +35,7 @@
               </a-menu-item>
 
               <a-menu-item>
-                <div @click="LOGIN_OUT">退出</div>
+                <div @click="onLoginOut">退出</div>
               </a-menu-item>
             </a-menu>
           </a-dropdown>
@@ -52,12 +52,14 @@ export default {
     return { search: "" };
   },
   mounted() {
- 
+
   },
   methods: {
-    ...mapMutations(["LOGIN_OUT"]),
+    onLoginOut(){
+      this.$store.commit("user/loginOut");
+    },
     onLogin() {
-      this.$store.commit("LOGIN_STATUS", true);
+      this.$store.commit("user/loginDialog", true);
     }
   },
   computed: {
@@ -66,9 +68,8 @@ export default {
     //   return this.$store.state.userInfo;
     // }
 
-    //3.借助mapState对象展开运算符
     ...mapState({
-      userInfo: state => state.userInfo
+      userInfo: state => state.user.userInfo
     })
   }
 };

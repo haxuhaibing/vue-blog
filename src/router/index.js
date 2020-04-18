@@ -7,7 +7,8 @@ const routes = [{
     name: 'home',
     component: () => import( /* webpackChunkName: "about" */ '../views/home/home.vue'),
     meta: {
-      title: '首页'
+      title: '首页',
+      keepAlive: true
     }
   }, {
     path: '/',
@@ -20,7 +21,8 @@ const routes = [{
     name: 'detail',
     component: () => import( /* webpackChunkName: "about" */ '../views/detail/detail.vue'),
     meta: {
-      title: '加载中...'
+      title: '加载中...',
+      keepAlive: false
     }
   },
   {

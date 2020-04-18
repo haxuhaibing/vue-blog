@@ -59,7 +59,7 @@ export default {
       commentsList: {},
       nickname: "",
       contents: "",
-      username: this.$store.state.userInfo.username || "",
+      username: this.$store.state.user.userInfo.username || "",
       href: this.$route.params.href
     };
   },

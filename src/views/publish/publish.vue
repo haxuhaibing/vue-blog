@@ -59,16 +59,16 @@ export default {
     getCate() {
       this.post("cate/cateType").then(res => {
         if (res.code == 200) {
-          let o = [
+          this.tags = [
             {
               id: "0",
               name: "请选择分类",
               tag: "请选择分类"
-            }
+            },
+            ...res.data
           ];
-          this.tags = [...o, ...res.data];
           //编辑
-          if (this.$route.query.edit) {
+          if (this.$route.query.edit_id) {
             this.getArticle();
           }
         }
@@ -76,7 +76,7 @@ export default {
     },
     getArticle() {
       this.post("article/detail", {
-        id: this.$route.query.edit
+        href: this.$route.query.edit_id
       }).then(res => {
         console.log("获取详情", res);
         this.detail = res.data;
@@ -94,7 +94,7 @@ export default {
         title: this.title,
         contents: this.contents,
         cate_id: this.tag,
-        user_id: this.$store.state.userInfo.id,
+        user_id: this.$store.state.user.userInfo.id,
         edit_id: this.$route.query.edit
       }).then(res => {
         console.log("submit", res);

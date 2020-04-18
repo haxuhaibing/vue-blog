@@ -61,20 +61,20 @@ export default {
           }).then(res => {
             console.log("登录", res);
             if (res.code == 200) {
-              this.$store.commit("LOGIN_STATUS", false);
-              this.$store.commit("SET_USER", JSON.stringify(res.data));
+              this.$store.commit("user/loginDialog", false);
+              this.$store.commit("user/setUser", JSON.stringify(res.data));
             }
           });
         }
       });
     },
     handleCancel() {
-      this.$store.commit("LOGIN_STATUS", false);
+      this.$store.commit("user/loginDialog", false);
     }
   },
   computed: {
     isLogin() {
-      return this.$store.state.isLogin;
+      return this.$store.state.user.isLogin;
     }
   }
 };
