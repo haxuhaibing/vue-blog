@@ -90,20 +90,18 @@ export default {
       });
     },
     onSubmit() {
-      this.post("article/publishArticle", {
+      let data = {
         title: this.title,
         contents: this.contents,
         cate_id: this.tag,
         user_id: this.$store.state.user.userInfo.id,
-        edit_id: this.$route.query.edit
-      }).then(res => {
-        console.log("submit", res);
-        if (res.code == 200) {
-          this.$message.success("发布成功");
-          this.title = "";
-          this.tag = "0";
-          this.contents = "";
-        }
+        edit_id: this.$route.query.edit || ""
+      };
+      this.$store.dispatch("article/creatArticle", { data }).then(res => {
+        this.$message.success("发布成功");
+        this.title = "";
+        this.tag = "0";
+        this.contents = "";
       });
     },
     handleChange(value) {

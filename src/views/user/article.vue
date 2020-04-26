@@ -1,12 +1,43 @@
 <template lang="html">
-  <div class="user-article v-model v-shadow">
-    <a-table :columns="columns" :dataSource="articleList">
-      <a slot="action" slot-scope="text, record, index" href="javascript:;">
-        <a @click="() => edit(record, index)">编辑</a>
-        <a-divider type="vertical" />
-        <a @click="() => del(record, index)">删除</a>
-      </a>
-    </a-table>
+  <div id="user">
+    <div class="container">
+      <a-row :gutter="16">
+        <a-col :lg="{ span: 6 }">
+          <div class="user-nav">
+            <a-menu
+              @click="onOpenChange"
+              :defaultSelectedKeys="['1']"
+              :openKeys.sync="openKeys"
+              mode="inline"
+            >
+              <a-sub-menu key="sub1">
+                <span slot="title"
+                  ><a-icon type="appstore" /><span>文章管理</span></span
+                >
+                <a-menu-item v-for="item in articleClassify" :key="item.id">{{
+                  item.name
+                }}</a-menu-item>
+              </a-sub-menu>
+            </a-menu>
+          </div></a-col
+        >
+        <a-col :lg="{ span: 18 }">
+          <div class="user-article v-model v-shadow">
+            <a-table :columns="columns" :dataSource="currentList">
+              <a
+                slot="action"
+                slot-scope="text, record, index"
+                href="javascript:;"
+              >
+                <a @click="() => edit(record, index)">编辑</a>
+                <a-divider type="vertical" />
+                <a @click="() => del(record, index)">删除</a>
+              </a>
+            </a-table>
+          </div>
+        </a-col>
+      </a-row>
+    </div>
   </div>
 </template>
 <script>
@@ -27,29 +58,29 @@ const columns = [
     scopedSlots: { customRender: "action" }
   }
 ];
+import { mapState } from "vuex";
 export default {
+  name: "userarticle",
   data() {
     return {
-      columns,
-      articleList: []
+      classify: 1,
+      currentList: [],
+      current: ["note"],
+      openKeys: ["sub1"],
+      columns
     };
   },
-  created() {
-    this.getArticleList();
+  mounted() {
+    this.getCurrentList();
   },
   methods: {
-    getArticleList() {
-      this.post("/article/list").then(res => {
-        console.log("文章列表", res);
-        if (res.code == 200) {
-          let data = res.data;
-          let arryNew = [];
-          data.map((item, index) => {
-            arryNew.push(Object.assign({}, item, { key: index }));
-          });
-          this.articleList = arryNew;
-        }
-      });
+    onOpenChange(e) {
+      this.classify = e.key;
+    },
+    getCurrentList() {
+      this.currentList = this.articleList.filter(
+        item => item.cate_id == this.classify
+      );
     },
     edit(record, index) {
       this.$router.push({
@@ -57,15 +88,25 @@ export default {
       });
     },
     del(record, index) {
-      let id = record.id;
-      this.post("/article/delete", {
-        id: id
-      }).then(response => {
-        this.articleList.splice(index, 1);
-        if (response.code == 200) {
-          this.$message.success(response.msg);
-        }
-      });
+      this.$store
+        .dispatch("article/deleteArticle", {
+          record
+        })
+        .then(() => {
+          this.$message.success("删除成功！");
+        });
+    }
+  },
+  computed: mapState({
+    articleList: state => state.article.articleList,
+    articleClassify: state => state.article.articleClassify
+  }),
+  watch: {
+    classify() {
+      this.getCurrentList();
+    },
+    articleList() {
+      this.getCurrentList();
     }
   }
 };
@@ -76,5 +117,3 @@ export default {
   margin-top: 16px;
 }
 </style>
-
-<style lang="css" scoped></style>

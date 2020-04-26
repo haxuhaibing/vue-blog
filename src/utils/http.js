@@ -13,7 +13,8 @@ axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded;char
 //axiso
 axios.interceptors.request.use(
   config => {
-    let token = store.state.user.userInfo.token || '';
+    //let token = store.state.user.userInfo.token || '';
+    let token = '';
     if (config.method == 'get') {
       config.params.token = token
     }

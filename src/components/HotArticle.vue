@@ -1,9 +1,9 @@
 <template lang="html">
   <div class="hot-article v-model v-shadow">
-      <h2>近期热门 - 点击最多</h2>
+    <h2>近期热门 - 点击最多</h2>
     <div class="hot-article-list">
       <ul>
-        <li v-for="row in hotArticleList" :key="row.id">
+        <li v-for="row in articleList" :key="row.id">
           <router-link :to="{ name: 'detail', params: { id: row.url } }">{{
             row.title
           }}</router-link>
@@ -14,25 +14,26 @@
 </template>
 
 <script>
+import { mapState, mapActions } from "vuex";
 export default {
-  data() {
-    return {
-      hotArticleList: {}
-    };
-  },
+  computed: mapState({
+    articleList: state => state.article.articleList
+  }),
   created() {
-    this.getHotArticleList();
+    //this.getHotArticleList();
   },
-  mounted() {},
+  mounted() {
+
+  },
   methods: {
-    getHotArticleList() {
-      this.post("/article/hotList").then(res => {
-    //    console.log("热门文章", res);
-        if (res.code == 200) {
-          this.hotArticleList = res.data;
-        }
-      });
-    }
+    // getHotArticleList() {
+    //   this.post("/article/hotList").then(res => {
+    //     //    console.log("热门文章", res);
+    //     if (res.code == 200) {
+    //       this.hotArticleList = res.data;
+    //     }
+    //   });
+    // }
   }
 };
 </script>

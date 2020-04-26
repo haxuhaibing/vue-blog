@@ -10,9 +10,9 @@
             <div class="category-nav-list">
               <ul>
                 <li
-                  v-for="item in categoryList"
+                  v-for="item in articleClassify"
                   :key="item.id"
-                  @click="onCate(item.tag, item.id)"
+                  @click="onCategory(item.tag, item.id)"
                   :class="[categoryId == item.id ? 'active' : '']"
                 >
                   {{ item.name }}
@@ -26,7 +26,7 @@
               <div class="cate-list">
                 <div
                   class="article-list-item"
-                  v-for="row in currentList"
+                  v-for="row in pageList"
                   :key="row.id"
                 >
                   <h2 class="title">
@@ -47,7 +47,15 @@
               </div>
             </a-spin>
           </div>
-          <a-pagination v-model="currentPage" :total="total" :hideOnSinglePage="true" />
+          <div class="category-pagination">
+            <a-pagination
+              v-model="currentPage"
+              :total="total"
+              :defaultPageSize="setps"
+              :hideOnSinglePage="false"
+              @change="onChangePagination"
+            />
+          </div>
         </a-col>
         <a-col :lg="{ span: 6 }">
           <HotArticle></HotArticle>
@@ -58,96 +66,75 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import HotArticle from "@/components/HotArticle";
 export default {
   name: "category",
   data() {
     return {
       currentPage: 1,
-      setps: 4,
-      categoryList: [],
-      articleList: [],
+      setps: 2,
       currentList: [],
       total: 0,
       cateListLoading: true,
       categoryId: "",
       isPagination: true,
-      isData: false
+      isData: false,
+      pageList: []
     };
   },
   created() {
-    this.init();
+    this.getCategory();
   },
   mounted() {},
   methods: {
-    init() {
-      this.getCategory();
-    },
     //获取文章列表
-    getArticleList() {
-      this.cateListLoading = true;
-      this.post("/article/list", {
-        cate_id: this.categoryId
-      }).then(res => {
-      //  console.log("文章列表", res);
-        if (res.code == 200) {
-          if (res.data) {
-            this.articleList = res.data;
-            this.total = this.articleList.length;
-          } else {
-            this.isData = true;
-            this.articleList = [];
-          }
-          this.cateListLoading = false;
-          this.getPaginationList();
-        }
-      });
+    articleFilterList() {
+      this.currentList = this.articleList.filter(
+        item => item.cate_id == this.categoryId
+      );
+      this.total = this.currentList.length;
+      this.cateListLoading = false;
+      this.onChangePagination();
     },
     //获取分类
     getCategory() {
-      this.post("cate/cateType").then(res => {
-        if (res.code == 200) {
-          this.categoryList = res.data;
-          //解析当前url分类
-          for (let item of res.data) {
-            if (item.tag == this.$route.params.tag) {
-              this.categoryId = item.id;
-              break;
-            }
-          }
-          //获取的列表依赖分类
-          this.getArticleList();
+      if (this.articleClassify.length <= 0) {
+        this.$store.dispatch("article/setArticleClassify");
+      }
+
+      for (let item of this.articleClassify) {
+        if (item.tag == this.$route.params.tag) {
+          this.categoryId = item.id;
+          break;
         }
-      });
+      }
+      this.articleFilterList();
     },
-    getPaginationList() {
+    //获取分页
+    onChangePagination(current, size) {
       let currentSize = this.currentPage - 1;
       let setps = this.setps;
-      let result = this.articleList.slice(
+      let result = this.currentList.slice(
         currentSize * setps,
         setps * (currentSize + 1)
       );
-      this.currentList = result;
+      this.pageList = result;
     },
-    onCate(tag, id) {
+    //click category
+    onCategory(tag, id) {
       this.isData = false;
       this.categoryId = id;
-      this.currentList = [];
+      this.pageList = [];
       this.cateListLoading = true;
       this.$router.push({ path: `/category/${tag}` });
-    },
-    handleSizeChange(val) {
-      //  console.log(`每页 ${val} 条`);
-    },
-    handleCurrentChange(val) {
-      this.getPaginationList();
+      this.articleFilterList();
     }
   },
-  watch: {
-    $route() {
-      this.init();
-    }
-  },
+  computed: mapState({
+    articleList: state => state.article.articleList,
+    articleClassify: state => state.article.articleClassify
+  }),
   components: {
     HotArticle
   }
@@ -219,5 +206,8 @@ export default {
 }
 .cate-list-container {
   margin-top: 16px;
+}
+.category-pagination{
+  margin-top: 15px;
 }
 </style>
