@@ -26,11 +26,15 @@ const mutations = {
 const actions = {
   //文章列表赋值
   setArticle(context) {
-    post("/article/list").then(res => {
-      if (res.code == 200) {
-        context.commit('setArticle', res.data || [])
-      }
-    });
+    return new Promise((resolve) => {
+      post("/article/list").then(res => {
+        if (res.code == 200) {
+          context.commit('setArticle', res.data || []);
+          resolve('done')
+        }
+      });
+    })
+
   },
   //分类列表赋值
   setArticleClassify(context) {
@@ -45,14 +49,18 @@ const actions = {
     record
   }) {
     let rows = this.state.article.articleList;
-    post("/article/delete", {
-      id: record.id
-    }).then(response => {
-      if (response.code == 200) {
-        let result = rows.filter(item => item.id != record.id)
-        context.commit('setArticle', result || [])
-      }
-    });
+    return new Promise((resolve) => {
+      post("/article/delete", {
+        id: record.id
+      }).then(response => {
+        if (response.code == 200) {
+          let result = rows.filter(item => item.id != record.id)
+          context.commit('setArticle', result || [])
+          resolve('done')
+        }
+      });
+    })
+
 
   },
   //新增文章

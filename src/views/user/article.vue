@@ -23,17 +23,19 @@
         >
         <a-col :lg="{ span: 18 }">
           <div class="user-article v-model v-shadow">
-            <a-table :columns="columns" :dataSource="currentList">
-              <a
-                slot="action"
-                slot-scope="text, record, index"
-                href="javascript:;"
-              >
-                <a @click="() => edit(record, index)">编辑</a>
-                <a-divider type="vertical" />
-                <a @click="() => del(record, index)">删除</a>
-              </a>
-            </a-table>
+            <a-spin tip="操作中..." :spinning="spinning">
+              <a-table :columns="columns" :dataSource="currentList">
+                <a
+                  slot="action"
+                  slot-scope="text, record, index"
+                  href="javascript:;"
+                >
+                  <a @click="() => edit(record, index)">编辑</a>
+                  <a-divider type="vertical" />
+                  <a @click="() => del(record, index)">删除</a>
+                </a>
+              </a-table>
+            </a-spin>
           </div>
         </a-col>
       </a-row>
@@ -63,6 +65,7 @@ export default {
   name: "userarticle",
   data() {
     return {
+      spinning: false,
       classify: 1,
       currentList: [],
       current: ["note"],
@@ -81,6 +84,8 @@ export default {
       this.currentList = this.articleList.filter(
         item => item.cate_id == this.classify
       );
+      //表格行设置唯一的key
+      this.currentList.map(item => item.key = item.id);
     },
     edit(record, index) {
       this.$router.push({
@@ -88,12 +93,13 @@ export default {
       });
     },
     del(record, index) {
+      this.spinning = true;
       this.$store
         .dispatch("article/deleteArticle", {
           record
         })
-        .then(() => {
-          this.$message.success("删除成功！");
+        .then(res => {
+          this.spinning = false;
         });
     }
   },

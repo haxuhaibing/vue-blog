@@ -7,7 +7,7 @@
             <div class="article-list v-model v-shadow">
               <div
                 class="article-list-item"
-                v-for="row in articleList"
+                v-for="row in currentList"
                 :key="row.id"
               >
                 <h2 class="title">
@@ -31,6 +31,16 @@
             <HotArticle></HotArticle>
           </a-col>
         </a-row>
+        <div class="mt15">
+          <a-pagination
+            v-model="current"
+            :defaultPageSize="setps"
+            :total="total"
+            @change="onChangePagination"
+            showLessItems
+             
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -43,6 +53,14 @@ import HotArticle from "@/components/HotArticle.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "home",
+  data() {
+    return {
+      current: 1,
+      setps: 10,
+      total: 0,
+      currentList: []
+    };
+  },
   computed: mapState({
     articleList: state => state.article.articleList
   }),
@@ -52,6 +70,17 @@ export default {
   methods: {
     getArticleList() {
       this.$store.dispatch("article/setArticle");
+    },
+    onChangePagination(page, pageSize) {
+      let result = this.articleList.slice(page - 1, this.setps);
+      this.currentList = result;
+    }
+  },
+  watch: {
+    articleList() {
+      let result = this.articleList.slice(this.current - 1, this.setps);
+      this.total = this.articleList.length;
+      this.currentList = result;
     }
   },
   components: {
