@@ -20,14 +20,6 @@ const mutations = {
   //分类列表赋值
   setArticleClassify(state, payload) {
     state.articleClassify = payload;
-  },
-  //删除文章
-  deleteArticle(state, payload) {
-    state.articleList = payload;
-  },
-  //新增文章
-  creatArticle(state, payload) {
-    state.articleList = payload;
   }
 }
 // actions
