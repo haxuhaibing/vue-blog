@@ -7,7 +7,7 @@
             <div class="article-list v-model v-shadow">
               <div
                 class="article-list-item"
-                v-for="row in currentList"
+                v-for="row in currentPaginationList"
                 :key="row.id"
               >
                 <h2 class="title">
@@ -26,21 +26,20 @@
                 </div>
               </div>
             </div>
+            <div class="mt15">
+              <a-pagination
+                v-model="current"
+                :defaultPageSize="setps"
+                :total="total"
+                @change="onChangePagination"
+                showLessItems
+              />
+            </div>
           </a-col>
           <a-col :lg="{ span: 6 }">
             <HotArticle></HotArticle>
           </a-col>
         </a-row>
-        <div class="mt15">
-          <a-pagination
-            v-model="current"
-            :defaultPageSize="setps"
-            :total="total"
-            @change="onChangePagination"
-            showLessItems
-             
-          />
-        </div>
       </div>
     </div>
   </div>
@@ -58,7 +57,7 @@ export default {
       current: 1,
       setps: 10,
       total: 0,
-      currentList: []
+      currentPaginationList: []
     };
   },
   computed: mapState({
@@ -69,18 +68,23 @@ export default {
   },
   methods: {
     getArticleList() {
-      this.$store.dispatch("article/setArticle");
+      if (this.articleList.length < 0) {
+        this.$store.dispatch("article/setArticle");
+      }
+      this.initCurrentList();
     },
     onChangePagination(page, pageSize) {
-      let result = this.articleList.slice(page - 1, this.setps);
-      this.currentList = result;
-    }
-  },
-  watch: {
-    articleList() {
-      let result = this.articleList.slice(this.current - 1, this.setps);
+      let result = this.articleList.slice(
+        (page - 1) * pageSize,
+        pageSize * page
+      );
+      this.currentPaginationList = result;
+    },
+    //获取分页数据
+    initCurrentList() {
+      let result = this.articleList.slice(0, this.setps);
       this.total = this.articleList.length;
-      this.currentList = result;
+      this.currentPaginationList = result;
     }
   },
   components: {
@@ -115,6 +119,11 @@ export default {
   border-bottom: 1px solid #f4f4f4;
   .title {
     font-size: 1.2rem;
+    line-height: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     a {
       color: #333;
     }

@@ -1,6 +1,11 @@
+:root {
+  --bgColor: #f4f5f5;
+  --primary: #409eff;
+}
+
 body,
 html {
-  background: #f4f5f5;
+  background: var(--bgColor);
 }
 
 .ck-content {
@@ -14,8 +19,6 @@ h1 {
 h2 {
   font-size: 1.2rem;
 }
-
-
 
 .mt15 {
   margin-top: 1.5rem;
@@ -65,4 +68,28 @@ dl,
 ol,
 ul {
   margin: 0;
+}
+
+.v-headline {
+  background: #fff;
+  padding: 10px 16px;
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  align-items: center;
+
+  h2 {
+    color: #333;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+ 
+  }
+  border-bottom: 1px solid hsla(0,0%,58.8%,.1);
+}
+.pt-0{
+  padding-top: 0;
+}
+.icon-recommend{
+  width: 20px;
+  height: 20px;
 }

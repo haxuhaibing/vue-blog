@@ -5,21 +5,30 @@
         <router-link :to="{ name: 'home' }">
           <img class="logo" src="@/assets/images/logo.png" alt="" />
         </router-link>
-        <div class="header-right">
-          <ul class="nav">
-            <li><router-link to="/home">首页</router-link></li>
-            <li>
-              <router-link to="/category">
-                分类
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/about">关于我</router-link>
-            </li>
-            <li v-if="!userInfo" @click="onLogin">
-              登录
-            </li>
-          </ul>
+        <ul class="header-nav">
+          <li :class="this.$route.name == 'home' ? 'active' : ''">
+            <router-link to="/home">首页</router-link>
+          </li>
+          <li :class="this.$route.name == 'category' ? 'active' : ''">
+            <router-link to="/category">
+              分类
+            </router-link>
+          </li>
+          <li :class="this.$route.name == 'about' ? 'active' : ''">
+            <router-link to="/about">关于我</router-link>
+          </li>
+        </ul>
+        <div class="navbar-user">
+          <div v-if="!userInfo" @click="onLogin" class="navbar-btn-login">
+            登录
+          </div>
+          <div class="navbar-user-pulish" v-if="userInfo">
+            <router-link to="/publish">
+              <a-button type="primary" size="small" ghost
+                >写文章</a-button
+              ></router-link
+            >
+          </div>
           <a-dropdown v-if="userInfo">
             <a-avatar
               class="ant-dropdown-link"
@@ -49,13 +58,15 @@
 import { mapMutations, mapState } from "vuex";
 export default {
   data() {
-    return { search: "" };
+    return {
+      search: ""
+    };
   },
   mounted() {
 
   },
   methods: {
-    onLoginOut(){
+    onLoginOut() {
       this.$store.commit("user/loginOut");
     },
     onLogin() {
@@ -81,30 +92,49 @@ header {
   padding: 8px 16px;
   background-color: #fff;
 }
-
+.navbar-btn-login{
+  cursor: pointer;
+  &:hover{
+    color: var(--primary);
+  }
+}
+.navbar-user {
+  display: -webkit-flex;
+  display: -ms-flex;
+  display: flex;
+  align-items: center;
+}
 .logo {
   height: 40px;
 }
-.header-right {
+.header-left {
   display: -webkit-flex;
   display: -ms-flex;
   display: flex;
   align-items: center;
 }
-.nav {
+.header-nav {
+  flex: 1;
+
   display: -webkit-flex;
   display: -ms-flex;
   display: flex;
   align-items: center;
+  margin-left: 1rem;
 
   li {
-    margin-left: 16px;
+    margin-left: 1.6rem;
     line-height: 40px;
     cursor: pointer;
     font-size: 1rem;
-  }
-  a {
-    color: #333;
+    a {
+      color: #333;
+    }
+    &.active {
+      a {
+        color: var(--primary);
+      }
+    }
   }
 }
 .ant-avatar {

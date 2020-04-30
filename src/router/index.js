@@ -66,6 +66,14 @@ const routes = [{
     redirect: {
       name: 'userArticle'
     }
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import( /* webpackChunkName: "about" */ '../views/about/about.vue'),
+    meta: {
+      title: '关于我们'
+    }
   }
 
 ]

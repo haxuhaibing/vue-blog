@@ -3,25 +3,31 @@
     <a-row :gutter="16">
       <a-col :lg="{ span: 18 }">
         <div class="detail-content v-model v-shadow">
-          <div class="detail-title">
-            <h1>{{ detail.title }}</h1>
-          </div>
-          <div class="detail-propety">
-            <a-row :gutter="16" type="flex" justify="start" align="middle">
-              <a-col>
-                <div class="detail-tags">
-                  <a-tag color="blue">{{ detail.tags }}</a-tag>
-                </div>
-              </a-col>
-              <a-col>
-                <div class="detail-propety-publish">
-                  <span>发布于</span>
-                  <span>{{ detail.time }}</span>
-                </div></a-col
-              >
-            </a-row>
-          </div>
-          <div class="detail-desc" v-html="detail.contents" v-highlight></div>
+          <a-spin tip="加载中..." :spinning="spinning">
+            <div class="detail-title">
+              <h1>{{ articleDetail.title }}</h1>
+            </div>
+            <div class="detail-propety">
+              <a-row :gutter="16" type="flex" justify="start" align="middle">
+                <a-col>
+                  <div class="detail-tags">
+                    <a-tag color="blue">{{ articleDetail.tags }}</a-tag>
+                  </div>
+                </a-col>
+                <a-col>
+                  <div class="detail-propety-publish">
+                    <span>发布于</span>
+                    <span>{{ articleDetail.time }}</span>
+                  </div></a-col
+                >
+              </a-row>
+            </div>
+            <div
+              class="detail-desc"
+              v-html="articleDetail.contents"
+              v-highlight
+            ></div>
+          </a-spin>
         </div>
         <div class="post-comment v-model v-shadow">
           <h2>发布评论</h2>
@@ -30,14 +36,17 @@
               <a-input v-model="nickname" placeholder="昵称" />
             </div>
             <div class="form-group">
-              <Editor @ckeditorContents="ckeditorContents" :parentContents="contents"></Editor>
+              <Editor
+                @ckeditorContents="ckeditorContents"
+                :parentContents="contents"
+              ></Editor>
             </div>
             <div class="form-group">
               <a-button type="primary" @click="onComment">发布评论</a-button>
             </div>
           </div>
         </div>
-        <Comments :commentsList="commentsList"></Comments>
+        <Comments :commentsList="articleCommits"></Comments>
       </a-col>
       <a-col :lg="{ span: 6 }">
         <HotArticle></HotArticle>
@@ -50,13 +59,13 @@
 import HotArticle from "@/components/HotArticle.vue";
 import Comments from "@/components/Comments.vue";
 import Editor from "@/components/Editor.vue";
-
+import { mapState, mapActions } from "vuex";
 export default {
   name: "detail",
   data() {
     return {
-      detail: {},
-      commentsList: {},
+      spinning: true,
+      commentsList: [],
       nickname: "",
       contents: "",
       username: this.$store.state.user.userInfo.username || "",
@@ -67,46 +76,57 @@ export default {
     this.init();
   },
   mounted() {},
+  computed: mapState({
+    articleDetail: state => state.article.articleDetail,
+    articleCommits: state => state.article.articleCommits
+  }),
   methods: {
     init() {
       this.getDetail();
     },
+
     getDetail() {
-      this.post("article/detail", {
-        href: this.href
-      }).then(res => {
-        console.log("获取详情", res);
-        this.detail = res.data;
-        document.title = res.data.title;
-        this.getComments();
-      });
+      let data = {
+        href: this.$route.params.href
+      };
+      if (this.$route.params.href != this.articleDetail.href) {
+        this.$store.dispatch("article/articleDetail", { data }).then(res => {
+          this.spinning = false;
+          document.title = this.articleDetail.title;
+        });
+      } else {
+        this.spinning = false;
+        document.title = this.articleDetail.title;
+      }
     },
     //发布评论
     onComment() {
-      this.post("article/comment", {
+      let message = this.$message.loading("发布中...", 0);
+      let data = {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
-        cate_id: this.detail.id
-      }).then(res => {
-        console.log("提交评论", res);
-        if (res.code == 200) {
-          this.$message.success("评论成功");
+        cate_id: this.articleDetail.id
+      };
+      this.$store.dispatch("article/postCommit", { data }).then(res => {
+        //发布评论后，重新获取评论列表
+        let data = {
+          cate_id: this.articleDetail.id
+        };
+        this.$store.dispatch("article/articleCommits", { data }).then(res => {
+          //发布成功后，清除输入框内容
           this.contents = "";
-          this.getComments();
-        } else {
-          this.$message.success("评论失败");
-        }
+          setTimeout(message, 10);
+          this.$message.success("发布成功！", 1);
+        });
       });
     },
     //获取评论列表
     getComments() {
-      this.post("article/getComments", {
-        cate_id: this.detail.id
-      }).then(res => {
-        console.log("获取评论", res);
-        this.commentsList = res.data;
-      });
+      let data = {
+        cate_id: this.articleDetail.id
+      };
+      this.$store.dispatch("article/articleCommits", { data }).then(res => {});
     },
     //子组件传递给父组件
     ckeditorContents(val) {

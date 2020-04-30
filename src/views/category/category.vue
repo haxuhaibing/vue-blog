@@ -3,25 +3,19 @@
     <div class="container">
       <a-row :gutter="16">
         <a-col :lg="{ span: 18 }">
-          <div class="category-nav v-model v-shadow">
-            <div class="category-nav-title">
-              分类：
-            </div>
-            <div class="category-nav-list">
-              <ul>
-                <li
-                  v-for="item in articleClassify"
-                  :key="item.id"
-                  @click="onCategory(item.tag, item.id)"
-                  :class="[categoryId == item.id ? 'active' : '']"
-                >
-                  {{ item.name }}
-                </li>
-              </ul>
-            </div>
+          <div class="category-nav">
+            <ul class="category-nav-list">
+              <li
+                v-for="item in articleClassify"
+                :key="item.id"
+                @click="onCategory(item.tag, item.id)"
+                :class="[categoryId == item.id ? 'active' : '']"
+              >
+                {{ item.name }}
+              </li>
+            </ul>
           </div>
-          <div class="v-model v-shadow cate-list-container">
-            <h2>文章列表</h2>
+          <div class="  v-shadow cate-list-container pt-0">
             <a-spin tip="加载中..." :spinning="cateListLoading">
               <div class="cate-list">
                 <div
@@ -52,8 +46,9 @@
               v-model="currentPage"
               :total="total"
               :defaultPageSize="setps"
-              :hideOnSinglePage="false"
+              :hideOnSinglePage="true"
               @change="onChangePagination"
+              @showSizeChange="onShowSizeChange"
             />
           </div>
         </a-col>
@@ -73,7 +68,7 @@ export default {
   data() {
     return {
       currentPage: 1,
-      setps: 2,
+      setps: 10,
       currentList: [],
       total: 0,
       cateListLoading: true,
@@ -88,14 +83,14 @@ export default {
   },
   mounted() {},
   methods: {
-    //获取文章列表
+    //获取文章分类列表
     articleFilterList() {
       this.currentList = this.articleList.filter(
         item => item.cate_id == this.categoryId
       );
       this.total = this.currentList.length;
       this.cateListLoading = false;
-      this.onChangePagination();
+      this.pageList = this.currentList.slice(0, this.setps);
     },
     //获取分类
     getCategory() {
@@ -113,11 +108,9 @@ export default {
     },
     //获取分页
     onChangePagination(current, size) {
-      let currentSize = this.currentPage - 1;
-      let setps = this.setps;
       let result = this.currentList.slice(
-        currentSize * setps,
-        setps * (currentSize + 1)
+        (current - 1) * this.setps,
+        this.setps * current
       );
       this.pageList = result;
     },
@@ -129,6 +122,9 @@ export default {
       this.cateListLoading = true;
       this.$router.push({ path: `/category/${tag}` });
       this.articleFilterList();
+    },
+    onShowSizeChange(current, size) {
+      console.log(current, size);
     }
   },
   computed: mapState({
@@ -143,10 +139,17 @@ export default {
 
 <style lang="scss" scoped>
 .article-list-item {
-  padding: 15px 0;
+  padding: 16px 16px;
   border-bottom: 1px solid #f4f4f4;
+
   .title {
-    font-size: 24px;
+    font-size: 1.2rem;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 500;
     a {
       color: #333;
     }
@@ -167,34 +170,36 @@ export default {
     font-size: 14px;
     color: #3d3d3d;
   }
+  &:hover {
+    background: rgba(245, 245, 245, 0.6);
+    cursor: pointer;
+  }
+  &:last-child {
+    border-bottom: none;
+  }
 }
 .category-nav {
-  display: -webkit-flex;
-  display: -ms-flex;
   display: flex;
-  border-bottom: 1px solid #f1f1f1;
   margin-top: 16px;
 }
 .category-nav-title {
   font-size: 1rem;
 }
 .category-nav-list {
-  flex: 1;
-
-  ul {
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-  }
+  display: flex;
   li {
-    margin-left: 16px;
+    margin-right: 1.2rem;
     cursor: pointer;
-    a {
-      color: #666;
-    }
-    &:hover,
+    background: #fff;
+    border-radius: 23px;
+    padding: 1px 10px;
+
     &.active {
-      color: #409eff;
+      background: var(--primary);
+      color: #fff !important;
+    }
+    &:hover {
+      color: var(--primary);
     }
   }
 }
@@ -206,8 +211,9 @@ export default {
 }
 .cate-list-container {
   margin-top: 16px;
+  background: #fff;
 }
-.category-pagination{
+.category-pagination {
   margin-top: 15px;
 }
 </style>

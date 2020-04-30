@@ -2,8 +2,10 @@ import {
   post
 } from '@/utils/http'
 const state = {
-  articleList: [],
-  articleClassify: []
+  articleList: [], //文章列表
+  articleClassify: [], //文章分类
+  articleDetail: {}, //文章详情
+  articleCommits: [] //文章评论
 }
 
 // getters
@@ -20,6 +22,12 @@ const mutations = {
   //分类列表赋值
   setArticleClassify(state, payload) {
     state.articleClassify = payload;
+  },
+  setArticleDetail(state, payload) {
+    state.articleDetail = payload;
+  },
+  setArticleCommits(state, payload) {
+    state.articleCommits = payload;
   }
 }
 // actions
@@ -72,6 +80,40 @@ const actions = {
         this.dispatch("article/setArticle")
       }
     });
+  },
+  //文章详情
+  articleDetail(context, {
+    data
+  }) {
+    return new Promise(resolve => {
+      post("article/detail", data).then(res => {
+        context.commit('setArticleDetail', res.data || {})
+        resolve('done');
+      });
+    })
+
+  },
+  //文章评论
+  articleCommits(context, {
+    data
+  }) {
+    return new Promise(resolve => {
+      post("article/getComments", data).then(res => {
+        context.commit('setArticleCommits', res.data || [])
+        resolve('done');
+      });
+    })
+
+  },
+  //发布评论
+  postCommit(context, {
+    data
+  }) {
+    return new Promise(resolve => {
+      post("article/comment", data).then(() => {
+        resolve('评论成功！')
+      })
+    })
   }
 }
 
