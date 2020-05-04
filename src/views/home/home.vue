@@ -5,9 +5,16 @@
         <a-row :gutter="16">
           <a-col :lg="{ span: 18 }">
             <div class="article-list v-model v-shadow">
+              <div v-if="disposeList.length == 0" style="padding-top:20px;">
+                <a-empty>
+                  <span slot="description">
+                    暂无数据
+                  </span>
+                </a-empty>
+              </div>
               <div
                 class="article-list-item"
-                v-for="row in currentPaginationList"
+                v-for="row in disposeList"
                 :key="row.id"
               >
                 <h2 class="title">
@@ -26,6 +33,7 @@
                 </div>
               </div>
             </div>
+
             <div class="mt15">
               <a-pagination
                 v-model="current"
@@ -36,6 +44,7 @@
               />
             </div>
           </a-col>
+
           <a-col :lg="{ span: 6 }">
             <HotArticle></HotArticle>
           </a-col>
@@ -57,20 +66,31 @@ export default {
       current: 1,
       setps: 10,
       total: 0,
-      currentPaginationList: []
+      currentPaginationList: [],
+      disposeList: []
     };
   },
   computed: mapState({
     articleList: state => state.article.articleList
   }),
+  watch: {
+    articleList() {
+      this.initCurrentList();
+    }
+  },
   mounted() {
     this.getArticleList();
   },
   methods: {
     getArticleList() {
-      if (this.articleList.length < 0) {
-        this.$store.dispatch("article/setArticle");
-      }
+      //  if (this.articleList.length <= 0) {
+      this.$store.dispatch("article/setArticle").then(res => {
+        this.disposeList = res.map(item => ({
+          ...item,
+          contents: this.cutCharacterString(item.contents)
+        }));
+      });
+      //}
       this.initCurrentList();
     },
     onChangePagination(page, pageSize) {
@@ -85,6 +105,98 @@ export default {
       let result = this.articleList.slice(0, this.setps);
       this.total = this.articleList.length;
       this.currentPaginationList = result;
+    },
+    //截取文章长度
+    cutCharacterString(art) {
+      var br = {};
+      br.spTags = ["img", "br", "hr"]; /*不需要成对出现的标记*/
+      br.contain = function(arr, it) {
+        for (var i = 0, len = arr.length; i < len; i++) {
+          if (arr[i] == it) {
+            return true;
+          }
+        }
+        return false;
+      };
+      br.subArtc = function(article, worldNum) {
+        var result = [];
+        /*首先截取需要的字串*/
+
+        var wcount = 0;
+        var startTags = [],
+          endTags = [];
+        var isInTag = false;
+        for (var i = 0, len = article.length; i < len; i++) {
+          var w = article[i];
+          result.push(w);
+          if (w == "<") {
+            isInTag = true;
+          }
+          if (!isInTag) {
+            wcount++;
+            if (wcount == worldNum) {
+              break;
+            }
+          }
+          if (w == ">") {
+            isInTag = false;
+          }
+        }
+        /*对字串进行处理*/
+
+        var j = 0;
+        isInTag = false;
+        var isStartTag = true;
+        var tagTemp = "";
+        while (j < i) {
+          w = result[j];
+          if (isInTag) {
+            if (w == ">" || w == " " || w == "/") {
+              isInTag = false;
+              if (isStartTag) {
+                startTags.push(tagTemp);
+              } else {
+                endTags.push(tagTemp);
+              }
+              tagTemp = "";
+            }
+            if (isInTag) {
+              tagTemp += w;
+            }
+          }
+          if (w == "<") {
+            isInTag = true;
+            if (result[j + 1] == "/") {
+              isStartTag = false;
+              j++;
+            } else {
+              isStartTag = true;
+            }
+          }
+          j++;
+        }
+        /*剔除img,br等不需要成对出现的标记*/
+
+        var newStartTags = [];
+        for (var x = 0, len = startTags.length; x < len; x++) {
+          if (!br.contain(br.spTags, startTags[x])) {
+            newStartTags.push(startTags[x]);
+          }
+        }
+        /*添加没有的结束标记*/
+
+        var unEndTagsCount = newStartTags.length - endTags.length;
+        while (unEndTagsCount > 0) {
+          result.push("<");
+          result.push("/");
+          result.push(newStartTags[unEndTagsCount - 1]);
+          result.push(">");
+          unEndTagsCount--;
+        }
+        return result.join("");
+      };
+
+      return br.subArtc(art, 200);
     }
   },
   components: {

@@ -46,7 +46,9 @@
             </div>
           </div>
         </div>
-        <Comments :commentsList="articleCommits"></Comments>
+        <a-spin tip="加载中..." :spinning="commentsSpinning">
+          <Comments :commentsList="articleCommits"></Comments>
+        </a-spin>
       </a-col>
       <a-col :lg="{ span: 6 }">
         <HotArticle></HotArticle>
@@ -65,6 +67,7 @@ export default {
   data() {
     return {
       spinning: true,
+      commentsSpinning: true,
       commentsList: [],
       nickname: "",
       contents: "",
@@ -84,20 +87,24 @@ export default {
     init() {
       this.getDetail();
     },
-
     getDetail() {
       let data = {
         href: this.$route.params.href
       };
+
       if (this.$route.params.href != this.articleDetail.href) {
+        //清空评论列表
+        // this.articleCommits=[];
         this.$store.dispatch("article/articleDetail", { data }).then(res => {
           this.spinning = false;
           document.title = this.articleDetail.title;
         });
       } else {
         this.spinning = false;
+        this.commentsSpinning = false;
         document.title = this.articleDetail.title;
       }
+      this.getComments();
     },
     //发布评论
     onComment() {
@@ -106,12 +113,12 @@ export default {
         username: this.username,
         nickname: this.nickname,
         contents: this.contents,
-        cate_id: this.articleDetail.id
+        href: this.$route.params.href
       };
       this.$store.dispatch("article/postCommit", { data }).then(res => {
         //发布评论后，重新获取评论列表
         let data = {
-          cate_id: this.articleDetail.id
+          href: this.$route.params.href
         };
         this.$store.dispatch("article/articleCommits", { data }).then(res => {
           //发布成功后，清除输入框内容
@@ -124,9 +131,11 @@ export default {
     //获取评论列表
     getComments() {
       let data = {
-        cate_id: this.articleDetail.id
+        href: this.$route.params.href
       };
-      this.$store.dispatch("article/articleCommits", { data }).then(res => {});
+      this.$store.dispatch("article/articleCommits", { data }).then(res => {
+        this.commentsSpinning = false;
+      });
     },
     //子组件传递给父组件
     ckeditorContents(val) {

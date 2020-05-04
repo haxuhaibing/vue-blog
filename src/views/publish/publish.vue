@@ -1,41 +1,43 @@
 <template lang="html">
   <div class="container ">
     <div class="v-model v-shadow publish-container">
-      <a-row>
-        <a-col :lg="{ span: 24 }">
-          <a-form @submit="onSubmit">
-            <a-form-item>
-              <a-input v-model="title" placeholder="请输入标题" />
-            </a-form-item>
-            <a-form-item>
-              <a-select
-                v-model="tag"
-                style="width: 120px"
-                @change="handleChange"
-              >
-                <a-select-option
-                  v-for="item in tags"
-                  :key="item.id"
-                  :value="item.id"
+      <a-spin tip="Loading..." :spinning="spinning">
+        <a-row>
+          <a-col :lg="{ span: 24 }">
+            <a-form @submit="onSubmit">
+              <a-form-item>
+                <a-input v-model="title" placeholder="请输入标题" />
+              </a-form-item>
+              <a-form-item>
+                <a-select
+                  v-model="tag"
+                  style="width: 120px"
+                  @change="handleChange"
                 >
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-            <a-form-item>
-              <Editor
-                @ckeditorContents="ckeditorContents"
-                :parentContents="contents"
-              ></Editor>
-            </a-form-item>
-            <a-form-item>
-              <a-button type="primary" @click="onSubmit"
-                >发布文章</a-button
-              ></a-form-item
-            >
-          </a-form></a-col
-        >
-      </a-row>
+                  <a-select-option
+                    v-for="item in tags"
+                    :key="item.id"
+                    :value="item.id"
+                  >
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
+              <a-form-item>
+                <Editor
+                  @ckeditorContents="ckeditorContents"
+                  :parentContents="contents"
+                ></Editor>
+              </a-form-item>
+              <a-form-item>
+                <a-button type="primary" @click="onSubmit"
+                  >发布文章</a-button
+                ></a-form-item
+              >
+            </a-form></a-col
+          >
+        </a-row>
+      </a-spin>
     </div>
   </div>
 </template>
@@ -49,7 +51,8 @@ export default {
       title: "",
       tag: "0",
       tags: [],
-      contents: ""
+      contents: "",
+      spinning: false
     };
   },
   mounted() {
@@ -87,6 +90,7 @@ export default {
             this.tag = item.id;
           }
         }
+        this.spinning = false;
       });
     },
     onSubmit() {

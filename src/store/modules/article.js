@@ -32,13 +32,13 @@ const mutations = {
 }
 // actions
 const actions = {
-  //文章列表赋值
+  //文章列表
   setArticle(context) {
     return new Promise((resolve) => {
       post("/article/list").then(res => {
         if (res.code == 200) {
           context.commit('setArticle', res.data || []);
-          resolve('done')
+          resolve(res.data)
         }
       });
     })

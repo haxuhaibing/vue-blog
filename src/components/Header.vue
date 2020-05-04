@@ -22,13 +22,13 @@
           <div v-if="!userInfo" @click="onLogin" class="navbar-btn-login">
             登录
           </div>
-          <div class="navbar-user-pulish" v-if="userInfo">
+          <!-- <div class="navbar-user-pulish" v-if="userInfo">
             <router-link to="/publish">
               <a-button type="primary" size="small" ghost
                 >写文章</a-button
               ></router-link
             >
-          </div>
+          </div> -->
           <a-dropdown v-if="userInfo">
             <a-avatar
               class="ant-dropdown-link"

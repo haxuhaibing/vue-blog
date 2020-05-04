@@ -1,5 +1,5 @@
 <template lang="html">
-  <div class="article-comments-content v-model v-shadow">
+  <div class="article-comments-content v-model v-shadow" v-if="isShowCommits">
     <h2>评论列表</h2>
     <div class="article-comments-list">
       <div
@@ -24,18 +24,30 @@
 
 <script>
 export default {
-  name:'comments',
+  name: "comments",
   props: {
     commentsList: {
       Type: Array,
       Required: true
+    }
+  },
+  data() {
+    return {
+      isShowCommits: true
+    }
+  },
+  watch:{
+    commentsList(){
+      if(this.commentsList.length==0){
+        this.isShowCommits=false
+      }
     }
   }
 };
 </script>
 
 <style lang="scss" scoped>
-.article-comments-content{
+.article-comments-content {
   margin-top: 16px;
 }
 .article-comments-list {

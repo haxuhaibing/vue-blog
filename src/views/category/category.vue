@@ -17,10 +17,12 @@
           </div>
           <div class="  v-shadow cate-list-container pt-0">
             <a-spin tip="加载中..." :spinning="cateListLoading">
+            <a-empty style="padding:20px 0" v-if="paginationList.length == 0" description="无数据" />
+
               <div class="cate-list">
                 <div
                   class="article-list-item"
-                  v-for="row in pageList"
+                  v-for="row in paginationList"
                   :key="row.id"
                 >
                   <h2 class="title">
@@ -37,7 +39,6 @@
                     <div class="date">{{ row.time }}</div>
                   </div>
                 </div>
-                <a-empty v-if="isData" description="暂无更多" />
               </div>
             </a-spin>
           </div>
@@ -74,8 +75,7 @@ export default {
       cateListLoading: true,
       categoryId: "",
       isPagination: true,
-      isData: false,
-      pageList: []
+      paginationList: []
     };
   },
   created() {
@@ -90,7 +90,7 @@ export default {
       );
       this.total = this.currentList.length;
       this.cateListLoading = false;
-      this.pageList = this.currentList.slice(0, this.setps);
+      this.paginationList = this.currentList.slice(0, this.setps);
     },
     //获取分类
     getCategory() {
@@ -112,13 +112,13 @@ export default {
         (current - 1) * this.setps,
         this.setps * current
       );
-      this.pageList = result;
+      this.paginationList = result;
     },
     //click category
     onCategory(tag, id) {
       this.isData = false;
       this.categoryId = id;
-      this.pageList = [];
+      this.paginationList = [];
       this.cateListLoading = true;
       this.$router.push({ path: `/category/${tag}` });
       this.articleFilterList();
@@ -203,9 +203,7 @@ export default {
     }
   }
 }
-.cate-list {
-  min-height: 100px;
-}
+
 .el-pagination {
   margin-top: 1.5rem;
 }

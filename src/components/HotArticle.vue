@@ -7,6 +7,11 @@
       <h2>近期热门 - 点击最多</h2>
     </div>
     <div class="hot-article-list ">
+      <a-empty v-if="articleList.length == 0" style="padding:10px 0">
+        <span slot="description">
+          暂无数据
+        </span>
+      </a-empty>
       <ul>
         <li v-for="row in articleList.slice(0, 10)" :key="row.id">
           <router-link :to="{ name: 'detail', params: { href: row.href } }">{{
