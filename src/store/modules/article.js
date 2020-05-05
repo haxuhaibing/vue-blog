@@ -1,6 +1,10 @@
 import {
   post
 } from '@/utils/http'
+
+import {
+  cutCharacterString
+} from "@/utils/common.js";
 const state = {
   articleList: [], //文章列表
   articleClassify: [], //文章分类
@@ -10,7 +14,12 @@ const state = {
 
 // getters
 const getters = {
-
+  doneArticleList: (state) => {
+    return state.articleList.map(item => ({
+      ...item,
+      contents: cutCharacterString(item.contents)
+    }))
+  }
 }
 
 // mutations

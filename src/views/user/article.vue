@@ -88,7 +88,7 @@ export default {
     },
     edit(record, index) {
       this.$router.push({
-        path: `/publish?edit_id=${record.href}`
+        path: `/publish?href=${record.href}`
       });
     },
     del(record, index) {

@@ -71,7 +71,7 @@ export default {
             ...res.data
           ];
           //编辑
-          if (this.$route.query.edit_id) {
+          if (this.$route.query.href) {
             this.getArticle();
           }
         }
@@ -79,7 +79,7 @@ export default {
     },
     getArticle() {
       this.post("article/detail", {
-        href: this.$route.query.edit_id
+        href: this.$route.query.href
       }).then(res => {
         console.log("获取详情", res);
         this.detail = res.data;
@@ -99,8 +99,10 @@ export default {
         contents: this.contents,
         cate_id: this.tag,
         user_id: this.$store.state.user.userInfo.id,
-        edit_id: this.$route.query.edit || ""
+        edit_id:this.detail.id,
+        href: this.$route.query.href || ""
       };
+
       this.$store.dispatch("article/creatArticle", { data }).then(res => {
         this.$message.success("发布成功");
         this.title = "";
