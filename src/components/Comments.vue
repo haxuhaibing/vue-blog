@@ -34,12 +34,14 @@ export default {
   data() {
     return {
       isShowCommits: true
-    }
+    };
   },
-  watch:{
-    commentsList(){
-      if(this.commentsList.length==0){
-        this.isShowCommits=false
+  watch: {
+    commentsList() {
+      if (this.commentsList.length == 0) {
+        this.isShowCommits = false;
+      } else {
+        this.isShowCommits = true;
       }
     }
   }

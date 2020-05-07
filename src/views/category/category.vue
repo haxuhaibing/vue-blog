@@ -1,5 +1,6 @@
 <template lang="html">
   <div class="category-container">
+    
     <div class="container">
       <a-row :gutter="16">
         <a-col :lg="{ span: 18 }">
@@ -17,7 +18,11 @@
           </div>
           <div class="  v-shadow cate-list-container pt-0">
             <a-spin tip="加载中..." :spinning="cateListLoading">
-            <a-empty style="padding:20px 0" v-if="paginationList.length == 0" description="无数据" />
+              <a-empty
+                style="padding:20px 0"
+                v-if="paginationList.length == 0"
+                description="无数据"
+              />
 
               <div class="cate-list">
                 <div
@@ -62,7 +67,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import HotArticle from "@/components/HotArticle";
 export default {
   name: "category",
@@ -94,17 +99,20 @@ export default {
     },
     //获取分类
     getCategory() {
-      if (this.articleClassify.length <= 0) {
-        this.$store.dispatch("article/setArticleClassify");
-      }
-
-      for (let item of this.articleClassify) {
-        if (item.tag == this.$route.params.tag) {
-          this.categoryId = item.id;
-          break;
+      this.$store.dispatch("article/setArticleClassify").then(res => {
+        //获取当前分类id
+        for (let item of this.articleClassify) {
+          if (item.tag == this.$route.params.tag) {
+            this.categoryId = item.id;
+            break;
+          }
         }
-      }
-      this.articleFilterList();
+
+        //获取文章列表
+        this.$store.dispatch("article/setArticle").then(res => {
+          this.articleFilterList();
+        });
+      });
     },
     //获取分页
     onChangePagination(current, size) {
@@ -127,10 +135,12 @@ export default {
       console.log(current, size);
     }
   },
-  computed: mapState({
-    articleList: state => state.article.articleList,
-    articleClassify: state => state.article.articleClassify
-  }),
+  computed: {
+    ...mapState("article", ["articleClassify"]),
+    ...mapGetters("article", {
+      articleList: "doneArticleList"
+    })
+  },
   components: {
     HotArticle
   }

@@ -92,23 +92,19 @@ export default {
         href: this.$route.params.href
       };
 
-      if (this.$route.params.href != this.articleDetail.href) {
-        //清空评论列表
-        // this.articleCommits=[];
-        this.$store.dispatch("article/articleDetail", { data }).then(res => {
-          this.spinning = false;
-          document.title = this.articleDetail.title;
-        });
-      } else {
+      //清空评论列表
+      // this.articleCommits=[];
+      this.$store.dispatch("article/articleDetail", { data }).then(res => {
         this.spinning = false;
         this.commentsSpinning = false;
         document.title = this.articleDetail.title;
-      }
+      });
+
       this.getComments();
     },
     //发布评论
     onComment() {
-      let message = this.$message.loading("发布中...", 0);
+      let message = this.$message.loading("评论中...", 0);
       let data = {
         username: this.username,
         nickname: this.nickname,
@@ -124,7 +120,7 @@ export default {
           //发布成功后，清除输入框内容
           this.contents = "";
           setTimeout(message, 10);
-          this.$message.success("发布成功！", 1);
+          this.$message.success("评论成功！", 1);
         });
       });
     },

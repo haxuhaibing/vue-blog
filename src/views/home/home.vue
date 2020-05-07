@@ -57,13 +57,9 @@
     </div>
   </div>
 </template>
-
 <script>
-// import Swiper from "swiper";
-// import SwiperCss from "swiper/css/swiper.css";
 import HotArticle from "@/components/HotArticle.vue";
 import { mapState, mapGetters, mapActions } from "vuex";
-import { cutCharacterString } from "@/utils/common.js";
 
 export default {
   name: "home",
@@ -74,38 +70,21 @@ export default {
       current: 1,
       setps: 10,
       total: 0,
-      currentPaginationList: [],
-      disposeList: ["", "", "", "", "", "", "", "", "", "", ""]
+      currentPaginationList: []
     };
   },
-  // computed: mapState({
-  //   articleList: state => state.article.articleList
-  // }),
   computed: {
-    //带命名空间的绑定函数v1
-    // ...mapState({
-    //   articleList: state => state.article.articleList
-    // })
-
-    //优化版
-    //第一个参数是命名空间的路径v2
-    // ...mapState("article", {
-    //   articleList: state => state.articleList
-    // }),
-    //继续优化=>
-    //    ...mapState("article", ["articleList"]),
     ...mapGetters("article", {
       articleList: "doneArticleList"
     })
   },
   watch: {
     articleList() {
-      this.initCurrentList();
+      this.initArticleList();
     }
   },
   mounted() {
     this.getArticleList();
-    // console.log(this.$store.getters.article);
   },
   methods: {
     getArticleList() {
@@ -114,36 +93,28 @@ export default {
           //没有数据
           if (res.length == 0) {
             this.isDisposeList = true;
+          } else {
+            this.initArticleList();
           }
-          //
-          this.disposeList = res.map(item => ({
-            ...item,
-            contents: cutCharacterString(item.contents)
-          }));
 
           this.loading = false;
-          this.initCurrentList();
         });
       } else {
-        this.disposeList = this.articleList.map(item => ({
-          ...item,
-          contents: cutCharacterString(item.contents)
-        }));
         this.loading = false;
-        this.initCurrentList();
+        this.initArticleList();
       }
     },
     onChangePagination(page, pageSize) {
-      let result = this.disposeList.slice(
+      let result = this.articleList.slice(
         (page - 1) * pageSize,
         pageSize * page
       );
       this.currentPaginationList = result;
     },
     //获取分页数据
-    initCurrentList() {
-      let result = this.disposeList.slice(0, this.setps);
-      this.total = this.disposeList.length;
+    initArticleList() {
+      let result = this.articleList.slice(0, this.setps);
+      this.total = this.articleList.length;
       this.currentPaginationList = result;
     }
   },
@@ -153,7 +124,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss"  >
 .index-swiper {
   width: 100%;
   height: 300px;
@@ -207,6 +178,10 @@ export default {
   &:last-child {
     padding-bottom: 0;
     border-bottom: none;
+  }
+  .desc {
+    background: #f8f8f8;
+
   }
 }
 </style>

@@ -1,7 +1,15 @@
 import {
   post
 } from '@/utils/http'
-
+import {
+  getArticleList,
+  delectArticle,
+  getArticleClassify,
+  getArticleDetail,
+  creatOneArticle,
+  postArticleComment
+}
+from "@/api/index.js"
 import {
   cutCharacterString
 } from "@/utils/common.js";
@@ -14,6 +22,7 @@ const state = {
 
 // getters
 const getters = {
+  //截取文章详情页长度
   doneArticleList: (state) => {
     return state.articleList.map(item => ({
       ...item,
@@ -44,7 +53,7 @@ const actions = {
   //文章列表
   setArticle(context) {
     return new Promise((resolve) => {
-      post("/article/list").then(res => {
+      getArticleList().then(res => {
         if (res.code == 200) {
           context.commit('setArticle', res.data || []);
           resolve(res.data)
@@ -53,13 +62,19 @@ const actions = {
     })
 
   },
-  //分类列表赋值
-  setArticleClassify(context) {
-    post("/cate/cateType").then(res => {
-      if (res.code == 200) {
-        context.commit('setArticleClassify', res.data || [])
-      }
-    });
+  //分类列表
+  setArticleClassify({
+    commit
+  }) {
+    return new Promise((resolve) => {
+      getArticleClassify().then(res => {
+        if (res.code == 200) {
+          commit('setArticleClassify', res.data || [])
+          resolve(commit)
+        }
+      });
+    })
+
   },
   //删除文章
   deleteArticle(context, {
@@ -67,13 +82,11 @@ const actions = {
   }) {
     let rows = this.state.article.articleList;
     return new Promise((resolve) => {
-      post("/article/delete", {
-        id: record.id
-      }).then(response => {
+      delectArticle(record).then(response => {
         if (response.code == 200) {
           let result = rows.filter(item => item.id != record.id)
           context.commit('setArticle', result || [])
-          resolve('done')
+          resolve()
         }
       });
     })
@@ -84,7 +97,7 @@ const actions = {
   creatArticle(context, {
     data
   }) {
-    post("article/publishArticle", data).then(res => {
+    creatOneArticle(data).then(res => {
       if (res.code == 200) {
         this.dispatch("article/setArticle")
       }
@@ -95,7 +108,7 @@ const actions = {
     data
   }) {
     return new Promise(resolve => {
-      post("article/detail", data).then(res => {
+      getArticleDetail(data).then(res => {
         context.commit('setArticleDetail', res.data || {})
         resolve('done');
       });
@@ -119,7 +132,7 @@ const actions = {
     data
   }) {
     return new Promise(resolve => {
-      post("article/comment", data).then(() => {
+      postArticleComment(data).then(() => {
         resolve('评论成功！')
       })
     })
