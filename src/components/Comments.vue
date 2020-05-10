@@ -2,20 +2,23 @@
   <div class="article-comments-content v-model v-shadow" v-if="isShowCommits">
     <h2>评论列表</h2>
     <div class="article-comments-list">
-      <div
-        class="article-comments-item"
-        v-for="row in commentsList"
-        :key="row.id"
-      >
-        <div class="item-avatar">
-          <img :src="row.avatar" alt="" />
-        </div>
-        <div class="item-content">
-          <div class="username">
-            <span class="user">{{ row.username }}</span>
-            <span class="time">{{ row.time }}</span>
+      <a-skeleton v-if="isCommentsDone" active />
+      <div v-else>
+        <div
+          class="article-comments-item"
+          v-for="row in commentsList"
+          :key="row.id"
+        >
+          <div class="item-avatar">
+            <img :src="row.avatar" alt="" />
           </div>
-          <div class="comment" v-html="row.contents" v-highlight></div>
+          <div class="item-content">
+            <div class="username">
+              <span class="user">{{ row.username }}</span>
+              <span class="time">{{ row.time }}</span>
+            </div>
+            <div class="comment" v-html="row.contents" v-highlight></div>
+          </div>
         </div>
       </div>
     </div>
@@ -33,7 +36,8 @@ export default {
   },
   data() {
     return {
-      isShowCommits: true
+      isShowCommits: true,
+      isCommentsDone: true
     };
   },
   watch: {
@@ -42,6 +46,7 @@ export default {
         this.isShowCommits = false;
       } else {
         this.isShowCommits = true;
+        this.isCommentsDone= false
       }
     }
   }

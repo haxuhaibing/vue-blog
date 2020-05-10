@@ -42,6 +42,7 @@
   </div>
 </template>
 <script>
+import { mapState, mapGetters, mapActions } from "vuex";
 import Editor from "@/components/Editor.vue";
 export default {
   name: "publish",
@@ -58,52 +59,58 @@ export default {
   mounted() {
     this.getCate();
   },
+  computed: { ...mapState("article", ["articleClassify", "articleDetail"]) },
   methods: {
+    ...mapActions("article", [
+      "CREAT_ARTICLE",
+      "ARTICLE_CATEGORY",
+      "ARTICLE_DETAIL"
+    ]),
     getCate() {
-      this.post("cate/cateType").then(res => {
-        if (res.code == 200) {
-          this.tags = [
-            {
-              id: "0",
-              name: "请选择分类",
-              tag: "请选择分类"
-            },
-            ...res.data
-          ];
-          //编辑
-          if (this.$route.query.href) {
-            this.getArticle();
-          }
+      this.ARTICLE_CATEGORY().then(() => {
+        this.tags = [
+          {
+            id: "0",
+            name: "请选择分类",
+            tag: "请选择分类"
+          },
+          ...this.articleClassify
+        ];
+
+        //编辑
+        if (this.$route.query.href) {
+          this.getArticle();
         }
       });
     },
+    //编辑=>获取详情
     getArticle() {
-      this.post("article/detail", {
+      let href = {
         href: this.$route.query.href
-      }).then(res => {
-        console.log("获取详情", res);
-        this.detail = res.data;
-        this.contents = res.data.contents;
-        this.title = res.data.title;
+      };
+      this.ARTICLE_DETAIL({ href }).then(res => {
+        this.contents = this.articleDetail.contents;
+        this.title = this.articleDetail.title;
+        document.title = "更新文章";
         for (let item of this.tags) {
-          if (item.name == res.data.tags) {
+          if (item.name == this.articleDetail.tags) {
             this.tag = item.id;
           }
         }
-        this.spinning = false;
       });
     },
+    //更新&&发布
     onSubmit() {
       let data = {
         title: this.title,
         contents: this.contents,
         cate_id: this.tag,
         user_id: this.$store.state.user.userInfo.id,
-        edit_id:this.detail.id,
+        edit_id: this.detail.id,
         href: this.$route.query.href || ""
       };
 
-      this.$store.dispatch("article/creatArticle", { data }).then(res => {
+      this.CREAT_ARTICLE({ data }).then(res => {
         this.$message.success("发布成功");
         this.title = "";
         this.tag = "0";

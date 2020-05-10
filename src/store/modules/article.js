@@ -1,13 +1,19 @@
 import {
-  post
-} from '@/utils/http'
+  ARTICLE_LIST,
+  ARTICLE_CATEGORY,
+  ARTICLE_DETAIL,
+  ARTICLE_COMMITS,
+  CREAT_ARTICLE,
+  DELETE_ARTICLE
+} from '@/store/mutation-types.js';
 import {
   getArticleList,
   delectArticle,
   getArticleClassify,
   getArticleDetail,
   creatOneArticle,
-  postArticleComment
+  postArticleComment,
+  getArticleComments
 }
 from "@/api/index.js"
 import {
@@ -23,7 +29,7 @@ const state = {
 // getters
 const getters = {
   //截取文章详情页长度
-  doneArticleList: (state) => {
+  disposeArticleList: (state) => {
     return state.articleList.map(item => ({
       ...item,
       contents: cutCharacterString(item.contents)
@@ -34,28 +40,29 @@ const getters = {
 // mutations
 const mutations = {
   //文章列表赋值
-  setArticle(state, payload) {
+  [ARTICLE_LIST](state, payload) {
     state.articleList = payload;
   },
   //分类列表赋值
-  setArticleClassify(state, payload) {
+  [ARTICLE_CATEGORY](state, payload) {
     state.articleClassify = payload;
   },
-  setArticleDetail(state, payload) {
+  [ARTICLE_DETAIL](state, payload) {
     state.articleDetail = payload;
   },
-  setArticleCommits(state, payload) {
+  [ARTICLE_COMMITS](state, payload) {
     state.articleCommits = payload;
   }
 }
+
 // actions
 const actions = {
   //文章列表
-  setArticle(context) {
+  ARTICLE_LIST(context) {
     return new Promise((resolve) => {
       getArticleList().then(res => {
         if (res.code == 200) {
-          context.commit('setArticle', res.data || []);
+          context.commit(ARTICLE_LIST, res.data || []);
           resolve(res.data)
         }
       });
@@ -63,21 +70,22 @@ const actions = {
 
   },
   //分类列表
-  setArticleClassify({
+  ARTICLE_CATEGORY({
     commit
   }) {
     return new Promise((resolve) => {
       getArticleClassify().then(res => {
         if (res.code == 200) {
-          commit('setArticleClassify', res.data || [])
-          resolve(commit)
+          commit(ARTICLE_CATEGORY, res.data || [])
+          resolve(res.data)
         }
       });
     })
 
-  },
-  //删除文章
-  deleteArticle(context, {
+  }, //删除文章
+  [DELETE_ARTICLE]({
+    commit
+  }, {
     record
   }) {
     let rows = this.state.article.articleList;
@@ -85,50 +93,38 @@ const actions = {
       delectArticle(record).then(response => {
         if (response.code == 200) {
           let result = rows.filter(item => item.id != record.id)
-          context.commit('setArticle', result || [])
+          commit(ARTICLE_LIST, result || [])
           resolve()
         }
       });
     })
 
 
-  },
-  //新增文章
-  creatArticle(context, {
-    data
-  }) {
-    creatOneArticle(data).then(res => {
-      if (res.code == 200) {
-        this.dispatch("article/setArticle")
-      }
-    });
-  },
-  //文章详情
-  articleDetail(context, {
+  }, //文章评论
+  ARTICLE_COMMITS(context, {
     data
   }) {
     return new Promise(resolve => {
-      getArticleDetail(data).then(res => {
-        context.commit('setArticleDetail', res.data || {})
+      getArticleComments(data).then(res => {
+        context.commit(ARTICLE_COMMITS, res.data || [])
         resolve('done');
       });
     })
 
-  },
-  //文章评论
-  articleCommits(context, {
-    data
+  }, //文章详情
+  ARTICLE_DETAIL(context, {
+    href
   }) {
     return new Promise(resolve => {
-      post("article/getComments", data).then(res => {
-        context.commit('setArticleCommits', res.data || [])
+      getArticleDetail(href).then(res => {
+        context.commit(ARTICLE_DETAIL, res.data || {})
         resolve('done');
       });
     })
 
   },
   //发布评论
-  postCommit(context, {
+  POSTCOMMIT(context, {
     data
   }) {
     return new Promise(resolve => {
@@ -136,9 +132,23 @@ const actions = {
         resolve('评论成功！')
       })
     })
+  },
+  //新增文章
+  CREAT_ARTICLE({
+    dispatch
+  }, {
+    data
+  }) {
+    return new Promise(resolve => {
+      creatOneArticle(data).then(res => {
+        if (res.code == 200) {
+          dispatch("ARTICLE_LIST")
+          resolve('发布成功')
+        }
+      });
+    })
   }
 }
-
 
 export default {
   namespaced: true,

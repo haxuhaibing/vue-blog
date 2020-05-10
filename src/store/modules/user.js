@@ -1,3 +1,8 @@
+import {
+  LOGIN_DIALOG,
+  LOGIN_OUT,
+  SET_USER
+} from '@/store/mutation-types.js';
 const state = {
   userInfo: JSON.parse(localStorage.getItem('userInfo')) || '',
   isLogin: false
@@ -15,17 +20,17 @@ const actions = {
 
 // mutations
 const mutations = {
-  setUser(state, payload) {
+  [SET_USER](state, payload) {
     localStorage.setItem('userInfo', payload)
     state.userInfo = JSON.parse(payload)
   },
   //退出
-  loginOut(state) {
+  [LOGIN_OUT](state) {
     localStorage.removeItem('userInfo')
     state.userInfo = ''
   },
   //是否显示登陆弹窗
-  loginDialog(state, payload) {
+  [LOGIN_DIALOG](state,payload) {
     state.isLogin = payload
   }
 }

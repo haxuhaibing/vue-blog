@@ -15,7 +15,7 @@
 
               <div
                 class="article-list-item"
-                v-for="row in currentPaginationList"
+                v-for="row in paginationList"
                 :key="row.id"
               >
                 <a-skeleton :loading="loading" active>
@@ -68,55 +68,46 @@ export default {
       isDisposeList: false,
       loading: true,
       current: 1,
-      setps: 10,
+      setps: 2,
       total: 0,
-      currentPaginationList: []
+      paginationList: []
     };
   },
   computed: {
-    ...mapGetters("article", {
-      articleList: "doneArticleList"
-    })
+    ...mapState("article", ["articleList"]),
+    ...mapGetters("article", ["disposeArticleList"])
   },
   watch: {
-    articleList() {
-      this.initArticleList();
+    disposeArticleList() {
+        this.total = this.disposeArticleList.length;
     }
   },
   mounted() {
-    this.getArticleList();
+    this.initData();
   },
   methods: {
-    getArticleList() {
-      if (this.articleList.length <= 0) {
-        this.$store.dispatch("article/setArticle").then(res => {
-          //没有数据
-          if (res.length == 0) {
-            this.isDisposeList = true;
-          } else {
-            this.initArticleList();
-          }
-
-          this.loading = false;
-        });
-      } else {
-        this.loading = false;
-        this.initArticleList();
-      }
+    ...mapActions("article", ["ARTICLE_LIST"]),
+    initData() {
+      this.getArticleList();
     },
+    //获取文章列表
+    getArticleList() {
+      this.ARTICLE_LIST().then(res => {
+        this.paginationList = this.disposeArticleList.slice(0, this.setps);
+        this.loading = false;
+        this.total = this.disposeArticleList.length;
+      });
+    },
+    //获取当前分页列表
     onChangePagination(page, pageSize) {
-      let result = this.articleList.slice(
-        (page - 1) * pageSize,
+      console.log(page, pageSize)
+      this.paginationList = this.disposeArticleList.slice(
+        pageSize * (page - 1),
         pageSize * page
       );
-      this.currentPaginationList = result;
     },
     //获取分页数据
-    initArticleList() {
-      let result = this.articleList.slice(0, this.setps);
-      this.total = this.articleList.length;
-      this.currentPaginationList = result;
-    }
+    initArticleList() {}
   },
   components: {
     HotArticle
@@ -124,7 +115,7 @@ export default {
 };
 </script>
 
-<style lang="scss"  >
+<style lang="scss">
 .index-swiper {
   width: 100%;
   height: 300px;
@@ -181,7 +172,6 @@ export default {
   }
   .desc {
     background: #f8f8f8;
-
   }
 }
 </style>

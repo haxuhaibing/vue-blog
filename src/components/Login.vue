@@ -40,6 +40,7 @@
   </div>
 </template>
 <script>
+import { mapState,mapMutations } from "vuex";
 export default {
   name: "login",
   data() {
@@ -50,6 +51,7 @@ export default {
   },
   mounted() {},
   methods: {
+    ...mapMutations("user", ["SET_USER","LOGIN_DIALOG"]),
     check() {
       this.form.validateFields((err, values) => {
         if (!err) {
@@ -61,21 +63,19 @@ export default {
           }).then(res => {
             console.log("登录", res);
             if (res.code == 200) {
-              this.$store.commit("user/loginDialog", false);
-              this.$store.commit("user/setUser", JSON.stringify(res.data));
+              this.LOGIN_DIALOG(false);
+              this.SET_USER(JSON.stringify(res.data))
             }
           });
         }
       });
     },
     handleCancel() {
-      this.$store.commit("user/loginDialog", false);
+      this.LOGIN_DIALOG(false);
     }
   },
   computed: {
-    isLogin() {
-      return this.$store.state.user.isLogin;
-    }
+    ...mapState("user",["isLogin"])
   }
 };
 </script>

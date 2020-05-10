@@ -59,7 +59,7 @@ const columns = [
     scopedSlots: { customRender: "action" }
   }
 ];
-import { mapState } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 export default {
   name: "userarticle",
   data() {
@@ -76,6 +76,7 @@ export default {
     this.getCurrentList();
   },
   methods: {
+    ...mapActions("article", ["DELETE_ARTICLE"]),
     onOpenChange(e) {
       this.classify = e.key;
     },
@@ -92,26 +93,14 @@ export default {
       });
     },
     del(record, index) {
-      //this.spinning = true;
       let mes = this.$message.loading("处理中...", 0);
-      this.$store
-        .dispatch("article/deleteArticle", {
-          record
-        })
-        .then(res => {
-          //  this.spinning = false;
-          setTimeout(mes, 10);
-          this.$message.success("操作成功！",1);
-          // mes.then(() => {
-          //   this.$message.success("操作成功！", 1);
-          // });
-        });
+      this.DELETE_ARTICLE({ record }).then(res => {
+        setTimeout(mes, 10);
+        this.$message.success("操作成功！", 1);
+      });
     }
   },
-  computed: mapState({
-    articleList: state => state.article.articleList,
-    articleClassify: state => state.article.articleClassify
-  }),
+  computed: mapState("article", ["articleList", "articleClassify"]),
   watch: {
     classify() {
       this.getCurrentList();

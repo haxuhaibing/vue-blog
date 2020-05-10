@@ -54,7 +54,6 @@
       </div>
     </header>
   </div>
-
 </template>
 
 <script>
@@ -65,26 +64,18 @@ export default {
       search: ""
     };
   },
-  mounted() {
-
+  mounted() {},
+  computed: {
+    ...mapState("user", ["userInfo"])
   },
   methods: {
+    ...mapMutations("user", ["LOGIN_OUT", "LOGIN_DIALOG"]),
     onLoginOut() {
-      this.$store.commit("user/loginOut");
+      this.LOGIN_OUT();
     },
     onLogin() {
-      this.$store.commit("user/loginDialog", true);
+      this.LOGIN_DIALOG(true);
     }
-  },
-  computed: {
-    //1.普通函数获取
-    // userInfo() {
-    //   return this.$store.state.userInfo;
-    // }
-
-    ...mapState({
-      userInfo: state => state.user.userInfo
-    })
   }
 };
 </script>
@@ -99,9 +90,9 @@ export default {
   width: 100%;
   z-index: 999;
 }
-.navbar-btn-login{
+.navbar-btn-login {
   cursor: pointer;
-  &:hover{
+  &:hover {
     color: var(--primary);
   }
 }

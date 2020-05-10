@@ -36,8 +36,17 @@ export const creatOneArticle = (data) => {
 }
 
 /**
- * 新增文章
+ * 发布评论
  */
 export const postArticleComment = (data) => {
   return post("article/comment", data)
 }
+
+/**
+ * 文章评论
+ */
+export const getArticleComments = (data) => {
+  return post("article/getComments", data)
+}
+
+ 

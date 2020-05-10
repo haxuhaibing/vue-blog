@@ -2,8 +2,9 @@
   <div class="container detail-container">
     <a-row :gutter="16">
       <a-col :lg="{ span: 18 }">
-        <div class="detail-content v-model v-shadow">
-          <a-spin tip="加载中..." :spinning="spinning">
+        <section class="detail-content v-model v-shadow">
+          <a-skeleton v-if="isDone" active />
+          <div v-else>
             <div class="detail-title">
               <h1>{{ articleDetail.title }}</h1>
             </div>
@@ -27,8 +28,8 @@
               v-html="articleDetail.contents"
               v-highlight
             ></div>
-          </a-spin>
-        </div>
+          </div>
+        </section>
         <div class="post-comment v-model v-shadow">
           <h2>发布评论</h2>
           <div class="post-comment-form">
@@ -46,9 +47,8 @@
             </div>
           </div>
         </div>
-        <a-spin tip="加载中..." :spinning="commentsSpinning">
-          <Comments :commentsList="articleCommits"></Comments>
-        </a-spin>
+
+        <Comments :commentsList="articleCommits"></Comments>
       </a-col>
       <a-col :lg="{ span: 6 }">
         <HotArticle></HotArticle>
@@ -66,9 +66,8 @@ export default {
   name: "detail",
   data() {
     return {
-      spinning: true,
-      commentsSpinning: true,
       commentsList: [],
+      isDone: true,
       nickname: "",
       contents: "",
       username: this.$store.state.user.userInfo.username || "",
@@ -84,22 +83,18 @@ export default {
     articleCommits: state => state.article.articleCommits
   }),
   methods: {
+    ...mapActions("article", ["ARTICLE_DETAIL", "ARTICLE_COMMITS","POSTCOMMIT"]),
     init() {
       this.getDetail();
     },
     getDetail() {
-      let data = {
+      let href = {
         href: this.$route.params.href
       };
-
-      //清空评论列表
-      // this.articleCommits=[];
-      this.$store.dispatch("article/articleDetail", { data }).then(res => {
-        this.spinning = false;
-        this.commentsSpinning = false;
+      this.ARTICLE_DETAIL({ href }).then(res => {
         document.title = this.articleDetail.title;
+        this.isDone = false;
       });
-
       this.getComments();
     },
     //发布评论
@@ -111,12 +106,13 @@ export default {
         contents: this.contents,
         href: this.$route.params.href
       };
-      this.$store.dispatch("article/postCommit", { data }).then(res => {
+      this.POSTCOMMIT({data}).then(res => {
         //发布评论后，重新获取评论列表
         let data = {
           href: this.$route.params.href
         };
-        this.$store.dispatch("article/articleCommits", { data }).then(res => {
+
+        this.ARTICLE_COMMITS({ data }).then(res => {
           //发布成功后，清除输入框内容
           this.contents = "";
           setTimeout(message, 10);
@@ -129,9 +125,7 @@ export default {
       let data = {
         href: this.$route.params.href
       };
-      this.$store.dispatch("article/articleCommits", { data }).then(res => {
-        this.commentsSpinning = false;
-      });
+      this.ARTICLE_COMMITS({ data });
     },
     //子组件传递给父组件
     ckeditorContents(val) {
@@ -194,5 +188,6 @@ export default {
 }
 .detail-desc {
   margin-top: 16px;
+  background-color: #f8f8f8
 }
 </style>

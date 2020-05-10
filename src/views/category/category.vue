@@ -1,6 +1,5 @@
 <template lang="html">
   <div class="category-container">
-    
     <div class="container">
       <a-row :gutter="16">
         <a-col :lg="{ span: 18 }">
@@ -16,20 +15,14 @@
               </li>
             </ul>
           </div>
-          <div class="  v-shadow cate-list-container pt-0">
-            <a-spin tip="加载中..." :spinning="cateListLoading">
-              <a-empty
-                style="padding:20px 0"
-                v-if="paginationList.length == 0"
-                description="无数据"
-              />
-
-              <div class="cate-list">
-                <div
-                  class="article-list-item"
-                  v-for="row in paginationList"
-                  :key="row.id"
-                >
+          <div class="v-shadow cate-list-container ">
+            <div class="cate-list">
+              <div
+                class="article-list-item"
+                v-for="row in paginationList"
+                :key="row.id"
+              >
+                <a-skeleton :loading="loadding" active>
                   <h2 class="title">
                     <router-link
                       :to="{ name: 'detail', params: { href: row.href } }"
@@ -43,9 +36,9 @@
                     </div>
                     <div class="date">{{ row.time }}</div>
                   </div>
-                </div>
+                </a-skeleton>
               </div>
-            </a-spin>
+            </div>
           </div>
           <div class="category-pagination">
             <a-pagination
@@ -79,52 +72,67 @@ export default {
       total: 0,
       cateListLoading: true,
       categoryId: "",
+      isEmpty: false,
       isPagination: true,
-      paginationList: []
+      paginationList: [""],
+      loadding: true
     };
   },
   created() {
     this.getCategory();
   },
   mounted() {},
+  computed: {
+    ...mapState("article", ["articleClassify"]),
+    ...mapGetters("article", ["disposeArticleList"])
+  },
   methods: {
+    ...mapActions("article", ["ARTICLE_LIST", "ARTICLE_CATEGORY"]),
     //获取文章分类列表
     articleFilterList() {
-      this.currentList = this.articleList.filter(
+      this.currentList = this.disposeArticleList.filter(
         item => item.cate_id == this.categoryId
       );
       this.total = this.currentList.length;
       this.cateListLoading = false;
       this.paginationList = this.currentList.slice(0, this.setps);
+      //延迟加载状态，增强用户体验
+      setTimeout(() => {
+        this.loadding = false;
+      }, 200);
     },
     //获取分类
     getCategory() {
-      this.$store.dispatch("article/setArticleClassify").then(res => {
-        //获取当前分类id
-        for (let item of this.articleClassify) {
-          if (item.tag == this.$route.params.tag) {
-            this.categoryId = item.id;
-            break;
+      this.ARTICLE_CATEGORY().then(res => {
+        this.ARTICLE_LIST().then(res => {
+          //获取当前分类id
+          for (let item of this.articleClassify) {
+            if (item.tag == this.$route.params.tag) {
+              this.categoryId = item.id;
+              break;
+            }
           }
-        }
-
-        //获取文章列表
-        this.$store.dispatch("article/setArticle").then(res => {
-          this.articleFilterList();
+          //获取分类文章
+          this.paginationList = this.disposeArticleList.filter(
+            item => item.cate_id == this.categoryId
+          );
+          this.cateListLoading = false;
+          this.loadding = false;
         });
       });
     },
     //获取分页
-    onChangePagination(current, size) {
-      let result = this.currentList.slice(
-        (current - 1) * this.setps,
-        this.setps * current
+    onChangePagination(page, pageSize) {
+      console.log(page, pageSize);
+      this.paginationList = this.disposeArticleList.slice(
+        pageSize * (page - 1),
+        pageSize * page
       );
-      this.paginationList = result;
     },
     //click category
     onCategory(tag, id) {
       this.isData = false;
+      this.loadding = true;
       this.categoryId = id;
       this.paginationList = [];
       this.cateListLoading = true;
@@ -135,12 +143,6 @@ export default {
       console.log(current, size);
     }
   },
-  computed: {
-    ...mapState("article", ["articleClassify"]),
-    ...mapGetters("article", {
-      articleList: "doneArticleList"
-    })
-  },
   components: {
     HotArticle
   }
@@ -148,6 +150,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.category-container {
+  padding: 0 15px;
+}
+.cate-list-container {
+  margin-top: 16px;
+  background: #fff;
+  min-height: 100px;
+}
 .article-list-item {
   padding: 16px 16px;
   border-bottom: 1px solid #f4f4f4;
@@ -214,13 +224,6 @@ export default {
   }
 }
 
-.el-pagination {
-  margin-top: 1.5rem;
-}
-.cate-list-container {
-  margin-top: 16px;
-  background: #fff;
-}
 .category-pagination {
   margin-top: 15px;
 }
