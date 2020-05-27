@@ -7,7 +7,9 @@ body,
 html {
   background: var(--bgColor);
 }
-
+a{
+  color: #333;
+}
 .ck-content {
   min-height: 160px;
 }
@@ -82,7 +84,9 @@ ul {
     color: #333;
     font-size: 0.9rem;
     margin-bottom: 0;
- 
+  }
+  svg{
+    margin-right: 0.5rem;
   }
   border-bottom: 1px solid hsla(0,0%,58.8%,.1);
 }

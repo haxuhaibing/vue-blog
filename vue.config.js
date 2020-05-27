@@ -77,6 +77,7 @@ module.exports = {
       });
   },
   configureWebpack: config => {
+    config.entry.app = ["babel-polyfill", "./src/main.js"];
     if (isProduction) {
       // 用cdn方式引入
       config.externals = {

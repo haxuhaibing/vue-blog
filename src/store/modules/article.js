@@ -4,7 +4,9 @@ import {
   ARTICLE_DETAIL,
   ARTICLE_COMMITS,
   CREAT_ARTICLE,
-  DELETE_ARTICLE
+  DELETE_ARTICLE,
+  HOT_ARTICLE_LIST,
+  CATEGORY_ARTICLE_LIST
 } from '@/store/mutation-types.js';
 import {
   getArticleList,
@@ -23,17 +25,36 @@ const state = {
   articleList: [], //文章列表
   articleClassify: [], //文章分类
   articleDetail: {}, //文章详情
-  articleCommits: [] //文章评论
+  articleCommits: [], //文章评论
+  hotArticleList: [], //热门文章
+  categoryArticleList: []
 }
 
 // getters
 const getters = {
   //截取文章详情页长度
   disposeArticleList: (state) => {
-    return state.articleList.map(item => ({
+
+    if (state.articleList.list.length > 0) {
+      return state.articleList.list.map(item => ({
+        ...item,
+        contents: cutCharacterString(item.contents)
+      }))
+    } else {
+      return []
+    }
+
+  },
+  disposeCategoryArticleList: (state) => {
+    if (state.categoryArticleList.length == 0) {
+      return []
+    }
+    return state.categoryArticleList.list.map(item => ({
       ...item,
       contents: cutCharacterString(item.contents)
     }))
+
+
   }
 }
 
@@ -52,15 +73,54 @@ const mutations = {
   },
   [ARTICLE_COMMITS](state, payload) {
     state.articleCommits = payload;
-  }
+  },
+  [HOT_ARTICLE_LIST](state, payload) {
+    state.hotArticleList = payload;
+  },
+  [CATEGORY_ARTICLE_LIST](state, payload) {
+    state.categoryArticleList = payload;
+  },
+
 }
 
 // actions
 const actions = {
-  //文章列表
-  ARTICLE_LIST(context) {
+  //热门推荐
+  HOT_ARTICLE_LIST(context, {
+    data
+  }) {
     return new Promise((resolve) => {
-      getArticleList().then(res => {
+      getArticleList(data).then(res => {
+        if (res.code == 200) {
+          context.commit(HOT_ARTICLE_LIST, res.data.list || []);
+          resolve(res.data)
+        }
+      });
+    })
+
+  },
+  //分类列表
+  CATEGORY_ARTICLE_LIST(context, {
+    data
+  }) {
+    return new Promise((resolve) => {
+      getArticleList(data).then(res => {
+        if (res.code == 200) {
+          console.log(res)
+          context.commit(CATEGORY_ARTICLE_LIST, res.data || []);
+          resolve(res.data)
+        }
+      });
+    })
+
+  },
+  //文章列表
+  ARTICLE_LIST(context, {
+    data
+  }) {
+    return new Promise((resolve) => {
+      getArticleList(data).then(res => {
+        //console.log(res)
         if (res.code == 200) {
           context.commit(ARTICLE_LIST, res.data || []);
           resolve(res.data)

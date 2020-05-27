@@ -9,7 +9,7 @@
                 v-for="item in articleClassify"
                 :key="item.id"
                 @click="onCategory(item.tag, item.id)"
-                :class="[categoryId == item.id ? 'active' : '']"
+                :class="categoryId == item.id ? 'active' : ''"
               >
                 {{ item.name }}
               </li>
@@ -18,25 +18,33 @@
           <div class="v-shadow cate-list-container ">
             <div class="cate-list">
               <div
-                class="article-list-item"
-                v-for="row in paginationList"
-                :key="row.id"
+                v-if="paginationList.length == 0"
+                style="padding:15px 0"
               >
-                <a-skeleton :loading="loadding" active>
-                  <h2 class="title">
-                    <router-link
-                      :to="{ name: 'detail', params: { href: row.href } }"
-                      >{{ row.title }}</router-link
-                    >
-                  </h2>
-                  <div class="desc" v-html="row.contents" v-highlight></div>
-                  <div class="tags-date">
-                    <div class="tags">
-                      <span>{{ row.tags }}</span>
+                <a-empty description="暂无数据" />
+              </div>
+              <div v-else>
+                <div
+                  class="article-list-item"
+                  v-for="row in paginationList"
+                  :key="row.id"
+                >
+                  <a-skeleton :loading="loadding" active>
+                    <h2>
+                      <router-link
+                        :to="{ name: 'detail', params: { href: row.href } }"
+                        >{{ row.title }}</router-link
+                      >
+                    </h2>
+                    <div class="desc" v-html="row.contents" v-highlight></div>
+                    <div class="tags-date">
+                      <div class="tags">
+                        <span>{{ row.tags }}</span>
+                      </div>
+                      <div class="date">{{ row.time }}</div>
                     </div>
-                    <div class="date">{{ row.time }}</div>
-                  </div>
-                </a-skeleton>
+                  </a-skeleton>
+                </div>
               </div>
             </div>
           </div>
@@ -68,11 +76,8 @@ export default {
     return {
       currentPage: 1,
       setps: 10,
-      currentList: [],
       total: 0,
-      cateListLoading: true,
-      categoryId: "",
-      isEmpty: false,
+      categoryId: "1",
       isPagination: true,
       paginationList: [""],
       loadding: true
@@ -83,61 +88,56 @@ export default {
   },
   mounted() {},
   computed: {
-    ...mapState("article", ["articleClassify"]),
-    ...mapGetters("article", ["disposeArticleList"])
+    ...mapState("article", ["articleClassify", "categoryArticleList"]),
+    ...mapGetters("article", ["disposeCategoryArticleList"])
+  },
+  watch: {
+    disposeCategoryArticleList() {
+      this.paginationList = this.disposeCategoryArticleList;
+    }
   },
   methods: {
-    ...mapActions("article", ["ARTICLE_LIST", "ARTICLE_CATEGORY"]),
-    //获取文章分类列表
-    articleFilterList() {
-      this.currentList = this.disposeArticleList.filter(
-        item => item.cate_id == this.categoryId
-      );
-      this.total = this.currentList.length;
-      this.cateListLoading = false;
-      this.paginationList = this.currentList.slice(0, this.setps);
-      //延迟加载状态，增强用户体验
-      setTimeout(() => {
-        this.loadding = false;
-      }, 200);
-    },
+    ...mapActions("article", ["ARTICLE_CATEGORY", "CATEGORY_ARTICLE_LIST"]),
     //获取分类
     getCategory() {
       this.ARTICLE_CATEGORY().then(res => {
-        this.ARTICLE_LIST().then(res => {
-          //获取当前分类id
-          for (let item of this.articleClassify) {
-            if (item.tag == this.$route.params.tag) {
-              this.categoryId = item.id;
-              break;
-            }
+        //获取当前分类id
+        for (let item of this.articleClassify) {
+          if (item.tag == this.$route.params.tag) {
+            this.categoryId = item.id;
+            break;
           }
-          //获取分类文章
-          this.paginationList = this.disposeArticleList.filter(
-            item => item.cate_id == this.categoryId
-          );
-          this.cateListLoading = false;
+        }
+        let data = {
+          page: 1,
+          pageSize: 10,
+          categoryId: this.categoryId
+        };
+        this.CATEGORY_ARTICLE_LIST({ data }).then(res => {
           this.loadding = false;
         });
       });
     },
     //获取分页
     onChangePagination(page, pageSize) {
-      console.log(page, pageSize);
       this.paginationList = this.disposeArticleList.slice(
         pageSize * (page - 1),
         pageSize * page
       );
     },
-    //click category
+    //change category
     onCategory(tag, id) {
-      this.isData = false;
-      this.loadding = true;
+      this.paginationList = [""]; //为了显示骨架屏
       this.categoryId = id;
-      this.paginationList = [];
-      this.cateListLoading = true;
-      this.$router.push({ path: `/category/${tag}` });
-      this.articleFilterList();
+      this.loadding = true;
+      let data = {
+        page: 1,
+        pageSize: 10,
+        categoryId: this.categoryId
+      };
+      this.CATEGORY_ARTICLE_LIST({ data }).then(res => {
+        this.loadding = false;
+      });
     },
     onShowSizeChange(current, size) {
       console.log(current, size);
@@ -162,7 +162,7 @@ export default {
   padding: 16px 16px;
   border-bottom: 1px solid #f4f4f4;
 
-  .title {
+  h2 {
     font-size: 1.2rem;
     line-height: 1.2;
     display: -webkit-box;
@@ -170,9 +170,6 @@ export default {
     -webkit-box-orient: vertical;
     overflow: hidden;
     font-weight: 500;
-    a {
-      color: #333;
-    }
   }
   .tags-date {
     display: -webkit-flex;

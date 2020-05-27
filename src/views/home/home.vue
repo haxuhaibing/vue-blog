@@ -1,66 +1,63 @@
 <template lang="html">
-  <div>
-    <div class="index-content">
-      <div class="container">
-        <a-row :gutter="16">
-          <a-col :lg="{ span: 18 }">
-            <div class="article-list v-model v-shadow">
-              <div v-if="isDisposeList" style="padding-top:20px;">
-                <a-empty>
-                  <span slot="description">
-                    暂无数据
-                  </span>
-                </a-empty>
-              </div>
+  <div class="index-content">
+    <div class="container">
+      <a-row :gutter="16">
+        <a-col :lg="{ span: 18 }">
+          <div class="article-list v-model v-shadow">
+            <div v-if="isDisposeList" style="padding-top:20px;">
+              <a-empty>
+                <span slot="description">
+                  暂无数据
+                </span>
+              </a-empty>
+            </div>
 
-              <div
-                class="article-list-item"
-                v-for="row in paginationList"
-                :key="row.id"
-              >
-                <a-skeleton :loading="loading" active>
-                  <h2 class="title">
-                    <router-link
-                      :to="{ name: 'detail', params: { href: row.href } }"
-                    >
-                      {{ row.title }}
-                    </router-link>
-                  </h2>
-                  <div class="desc" v-html="row.contents" v-highlight></div>
-                  <div class="tags-date">
-                    <div class="tags">
-                      <span>{{ row.tags }}</span>
-                    </div>
-                    <div class="date">{{ row.time }}</div>
+            <div
+              class="article-list-item"
+              v-for="row in paginationList"
+              :key="row.id"
+            >
+              <a-skeleton :loading="loading" active>
+                <h2 class="title">
+                  <router-link
+                    :to="{ name: 'detail', params: { href: row.href } }"
+                  >
+                    {{ row.title }}
+                  </router-link>
+                </h2>
+                <div class="desc" v-html="row.contents" v-highlight></div>
+                <div class="tags-date">
+                  <div class="tags">
+                    <span>{{ row.tags }}</span>
                   </div>
-                </a-skeleton>
-              </div>
+                  <div class="date">{{ row.time }}</div>
+                </div>
+              </a-skeleton>
             </div>
+          </div>
 
-            <div class="mt15">
-              <a-pagination
-                v-model="current"
-                :defaultPageSize="setps"
-                :total="total"
-                @change="onChangePagination"
-                showLessItems
-                hideOnSinglePage
-              />
-            </div>
-          </a-col>
+          <div class="mt15">
+            <a-pagination
+              v-model="current"
+              :defaultPageSize="setps"
+              :total="total"
+              @change="onChangePagination"
+              showLessItems
+              hideOnSinglePage
+            />
+          </div>
+        </a-col>
 
-          <a-col :lg="{ span: 6 }">
-            <HotArticle></HotArticle>
-          </a-col>
-        </a-row>
-      </div>
+        <a-col :lg="{ span: 6 }">
+          <HotArticle></HotArticle>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>
 <script>
 import HotArticle from "@/components/HotArticle.vue";
 import { mapState, mapGetters, mapActions } from "vuex";
-
 export default {
   name: "home",
   data() {
@@ -68,7 +65,7 @@ export default {
       isDisposeList: false,
       loading: true,
       current: 1,
-      setps: 2,
+      setps: 5,
       total: 0,
       paginationList: []
     };
@@ -77,11 +74,7 @@ export default {
     ...mapState("article", ["articleList"]),
     ...mapGetters("article", ["disposeArticleList"])
   },
-  watch: {
-    disposeArticleList() {
-        this.total = this.disposeArticleList.length;
-    }
-  },
+  watch: {},
   mounted() {
     this.initData();
   },
@@ -91,20 +84,21 @@ export default {
       this.getArticleList();
     },
     //获取文章列表
-    getArticleList() {
-      this.ARTICLE_LIST().then(res => {
-        this.paginationList = this.disposeArticleList.slice(0, this.setps);
+    getArticleList(page) {
+      this.loading = true;
+      let data = {
+        page: page || this.current,
+        pageSize: this.setps
+      };
+      this.ARTICLE_LIST({ data }).then(res => {
+        this.paginationList = this.disposeArticleList;
         this.loading = false;
-        this.total = this.disposeArticleList.length;
+        this.total = this.articleList.total;
       });
     },
     //获取当前分页列表
-    onChangePagination(page, pageSize) {
-      console.log(page, pageSize)
-      this.paginationList = this.disposeArticleList.slice(
-        pageSize * (page - 1),
-        pageSize * page
-      );
+    onChangePagination(page) {
+      this.getArticleList(page);
     },
     //获取分页数据
     initArticleList() {}
@@ -115,19 +109,7 @@ export default {
 };
 </script>
 
-<style lang="scss">
-.index-swiper {
-  width: 100%;
-  height: 300px;
-  .swiper-slide {
-    background: pink;
-    display: -webkit-flex;
-    display: -ms-flex;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-}
+<style lang="scss" scoped="">
 .index-content {
   padding: 0 16px;
 }

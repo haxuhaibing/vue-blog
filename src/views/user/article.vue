@@ -23,8 +23,7 @@
         >
         <a-col :lg="{ span: 18 }">
           <div class="user-article v-model v-shadow">
-            <a-spin tip="操作中..." :spinning="spinning"> </a-spin>
-            <a-table :columns="columns" :dataSource="currentList">
+            <a-table :columns="columns" :dataSource="currentList" :loading="spinning" tip="操作中...">
               <a
                 slot="action"
                 slot-scope="text, record, index"
@@ -64,10 +63,9 @@ export default {
   name: "userarticle",
   data() {
     return {
-      spinning: false,
-      classify: 1,
+      spinning: true,
+      categoryId: 1,
       currentList: [],
-      current: ["note"],
       openKeys: ["sub1"],
       columns
     };
@@ -76,16 +74,23 @@ export default {
     this.getCurrentList();
   },
   methods: {
-    ...mapActions("article", ["DELETE_ARTICLE"]),
+    ...mapActions("article", ["DELETE_ARTICLE", "CATEGORY_ARTICLE_LIST"]),
     onOpenChange(e) {
-      this.classify = e.key;
+      this.categoryId = e.key;
+      this.spinning=true;
+      this.getCurrentList();
+
     },
     getCurrentList() {
-      this.currentList = this.articleList.filter(
-        item => item.cate_id == this.classify
-      );
-      //表格行设置唯一的key
-      this.currentList.map(item => (item.key = item.id));
+      let data = {
+        page: 1,
+        pageSize: 10,
+        categoryId: this.categoryId
+      };
+      this.CATEGORY_ARTICLE_LIST({ data }).then(res => {
+        this.spinning = false;
+
+      });
     },
     edit(record, index) {
       this.$router.push({
@@ -100,13 +105,15 @@ export default {
       });
     }
   },
-  computed: mapState("article", ["articleList", "articleClassify"]),
+  computed: {
+    ...mapState("article", ["articleClassify", "categoryArticleList"]),
+    ...mapGetters("article", ["disposeCategoryArticleList"])
+  },
   watch: {
-    classify() {
-      this.getCurrentList();
-    },
-    articleList() {
-      this.getCurrentList();
+    disposeCategoryArticleList() {
+      this.currentList = this.disposeCategoryArticleList;
+      //表格行设置唯一的key
+      this.currentList.map(item => (item.key = item.id));
     }
   }
 };

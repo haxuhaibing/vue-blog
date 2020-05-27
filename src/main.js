@@ -1,9 +1,11 @@
+/* jshint esversion: 6 */
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
 import hljs from 'highlight.js'
+ import '@babel/polyfill';
 import {
   fetch,
   post

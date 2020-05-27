@@ -1,19 +1,19 @@
 <template lang="html">
   <div class="hot-article  v-shadow">
     <div class="v-headline">
-      <!-- <svg class="icon-recommend" aria-hidden="true">
+      <svg class="icon-recommend" aria-hidden="true">
         <use xlink:href="#icon-rementuijian"></use>
-      </svg> -->
+      </svg>
       <h2>近期热门 - 点击最多</h2>
     </div>
     <div class="hot-article-list ">
-      <a-empty v-if="articleList.length == 0" style="padding:10px 0">
+      <a-empty v-if="hotArticleList.length == 0" style="padding:10px 0">
         <span slot="description">
           暂无数据
         </span>
       </a-empty>
       <ul>
-        <li v-for="row in articleList.slice(0, 10)" :key="row.id">
+        <li v-for="row in hotArticleList" :key="row.id">
           <router-link :to="{ name: 'detail', params: { href: row.href } }">{{
             row.title
           }}</router-link>
@@ -24,24 +24,24 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapGetters, mapActions } from "vuex";
 export default {
-  computed: mapState({
-    articleList: state => state.article.articleList
-  }),
+  computed: {
+    ...mapState("article", ["hotArticleList"])
+  },
   created() {
-    //this.getHotArticleList();
+    this.getHotArticleList();
   },
   mounted() {},
   methods: {
-    // getHotArticleList() {
-    //   this.post("/article/hotList").then(res => {
-    //     //    console.log("热门文章", res);
-    //     if (res.code == 200) {
-    //       this.hotArticleList = res.data;
-    //     }
-    //   });
-    // }
+    ...mapActions("article", ["HOT_ARTICLE_LIST"]),
+    getHotArticleList() {
+      let data = {
+        page: 1,
+        pageSize: 10
+      };
+      this.HOT_ARTICLE_LIST({ data });
+    }
   }
 };
 </script>

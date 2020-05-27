@@ -4,8 +4,8 @@ import {
 /**
  * 获取文章列表
  */
-export const getArticleList = () => {
-  return post("/article/list")
+export const getArticleList = (data) => {
+  return post("/article/list",data)
 }
 /**
  * 删除一行文章
@@ -48,5 +48,3 @@ export const postArticleComment = (data) => {
 export const getArticleComments = (data) => {
   return post("article/getComments", data)
 }
-
- 
